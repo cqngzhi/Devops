@@ -1,6 +1,7 @@
 # Cloudflare zone
 resource "cloudflare_zone" "example_zone" {
   zone = "example.com"  # Uw domeinnaam
+  account_id = var.cloudflare_account_id  # Definieer het indien nodig in een variabele account_id
 }
 
 # Cloudflare DNS record
