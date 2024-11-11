@@ -2,6 +2,9 @@
 resource "aws_security_group" "security" {
   name_prefix = "openvpn_security_group"
 
+#Koppel de beveiligingsgroep aan de VPC
+  vpc_id = aws_vpc.dev_openvpn.id
+
   # Toegestaan inkomend verkeer voor SSH (poort 22)
   ingress {
     description = "Allow SSH"
