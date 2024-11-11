@@ -1,6 +1,8 @@
+# Definieer een beveiligingsgroep voor OpenVPN en andere toegestane poorten
 resource "aws_security_group" "security" {
   name_prefix = "openvpn_security_group"
 
+  # Toegestaan inkomend verkeer voor SSH (poort 22)
   ingress {
     description = "Allow SSH"
     from_port   = 22
@@ -9,6 +11,7 @@ resource "aws_security_group" "security" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Toegestaan inkomend verkeer voor OpenVPN (poort 1194)
   ingress {
     description = "Allow OpenVPN"
     from_port   = 1194
@@ -17,7 +20,7 @@ resource "aws_security_group" "security" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # 允许 HTTP（端口 80）
+ # Toegestaan inkomend verkeer voor HTTP (poort 80)
   ingress {
     description = "Allow HTTP"
     from_port   = 80
@@ -26,7 +29,7 @@ resource "aws_security_group" "security" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # 允许 HTTPS（端口 443）
+  # Toegestaan inkomend verkeer voor HTTPS (poort 443)
   ingress {
     description = "Allow HTTPS"
     from_port   = 443
@@ -35,7 +38,7 @@ resource "aws_security_group" "security" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # 允许自定义端口（端口 9443）
+ # Toegestaan inkomend verkeer voor Portainer CE (poort 9443)
   ingress {
     description = "Allow custom port 9443"
     from_port   = 9443
@@ -44,6 +47,7 @@ resource "aws_security_group" "security" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+ # Toegestaan uitgaand verkeer naar alle bestemmingen (egress)
   egress {
     from_port   = 0
     to_port     = 0
