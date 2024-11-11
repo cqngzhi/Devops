@@ -1,19 +1,23 @@
+# Genereer een privé-sleutel met TLS
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
+# Genereer een AWS sleutel-paar (SSH sleutel) op basis van de privé-sleutel
 resource "aws_key_pair" "generated_key" {
   key_name   = "generated_key"
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
+# Sla de privé-sleutel lokaal op als een bestand
 resource "local_file" "private_key" {
   content         = tls_private_key.ssh_key.private_key_pem
   filename        = "${path.module}/generated_key.pem"
   file_permission = "0400"
 }
 
+# Maak een EC2-instantie aan in AWS
 resource "aws_instance" "openvpn" {
   count                       = var.counter
   ami                         = "ami-0e86e20dae9224db8"
@@ -28,6 +32,7 @@ resource "aws_instance" "openvpn" {
   }
 }
 
+# Wijs een Elastic IP toe aan de EC2-instantie
 resource "aws_eip" "openvpn_ip" {
   count    = var.counter
   instance = aws_instance.openvpn[count.index].id
