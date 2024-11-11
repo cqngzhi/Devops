@@ -32,3 +32,9 @@ variable "cloudflare_api_token" {
   sensitive   = true
 }
 
+# Variabele voor de Cloudflare account ID
+variable "cloudflare_account_id" {
+  description = "Cloudflare account ID"
+  type        = string
+  sensitive   = true
+}
