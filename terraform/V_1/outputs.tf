@@ -12,7 +12,7 @@ output "private_key_path" {
 
 # Toon de Cloudflare zone ID voor het domein
 output "cloudflare_zone_id" {
-  value       = cloudflare_zone.example_zone.id
+  value       = "cb06796a450b34dd4cb1d2b307706ecd"
   description = "The Cloudflare zone ID for the domain."
 }
 
