@@ -25,13 +25,6 @@ variable "counter" {
   description = "Number of instances to create"
 }
 
-# Variabele voor het e-mailadres van het Cloudflare-account
-variable "cloudflare_email" {
-  description = "Cloudflare account email"
-  type        = string
-  sensitive   = true
-}
-
 # Variabele voor de Cloudflare API-token
 variable "cloudflare_api_token" {
   description = "Cloudflare API token"
