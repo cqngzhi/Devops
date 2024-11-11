@@ -1,7 +1,6 @@
 # Cloudflare DNS record
 resource "cloudflare_record" "openvpn_dns" {
   zone_id = "cb06796a450b34dd4cb1d2b307706ecd"
-  account_id = var.cloudflare_account_id  # Definieer het indien nodig in een variabele account_id
   name    = "openvpn"
   type    = "A"
   value   = aws_eip.openvpn_ip[0].public_ip  # Het publieke IP van de eerste EC2 instantie (Elastic IP)
