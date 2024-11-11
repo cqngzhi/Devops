@@ -6,9 +6,6 @@ terraform {
       source = "hashicorp/aws"
       version = "~> 5.0"
     }
-  }
-  required_version = ">= 1.0"
-}
  # Cloudflare provider configuratie
     cloudflare = {
       source = "cloudflare/cloudflare"
