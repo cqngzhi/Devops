@@ -17,6 +17,33 @@ resource "aws_security_group" "security" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # 允许 HTTP（端口 80）
+  ingress {
+    description = "Allow HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # 允许 HTTPS（端口 443）
+  ingress {
+    description = "Allow HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # 允许自定义端口（端口 9443）
+  ingress {
+    description = "Allow custom port 9443"
+    from_port   = 9443
+    to_port     = 9443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
