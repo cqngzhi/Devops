@@ -20,3 +20,16 @@ variable "counter" {
   default     = 1
   description = "Number of instances to create"
 }
+
+variable "cloudflare_email" {
+  description = "Cloudflare account email"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_api_token" {
+  description = "Cloudflare API token"
+  type        = string
+  sensitive   = true
+}
+
