@@ -27,6 +27,11 @@ fi
 # Debug output for ansible_user
 echo "Ansible User: ${ansible_user}"
 
+# Check if inventory.yaml already exists and print a message
+if [ -f "$TARGET_DIR/inventory.yaml" ]; then
+  echo "inventory.yaml already exists, overwriting..."
+fi
+
 # Maak het inventory.yaml-bestand en schrijf het naar de opgegeven map
 cat <<EOF > "$TARGET_DIR/inventory.yaml"
 all:
