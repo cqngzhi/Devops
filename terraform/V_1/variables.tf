@@ -19,6 +19,13 @@ variable "aws_session_token" {
   sensitive   = true
 }
 
+# Definieer AWS-regiovariabelen
+variable "aws_region" {
+  description = "The AWS region where resources will be created"
+  type        = string
+  default     = "us-east-1"  
+}
+
 # Variabele voor het aantal te maken instanties
 variable "counter" {
   default     = 1
