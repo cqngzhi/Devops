@@ -1,0 +1,4 @@
+terraform output -json > terraform_outputs.json
+  
+chmod +x generate_inventory.sh
+./generate_inventory.sh
