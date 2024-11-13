@@ -12,7 +12,7 @@ output "private_key_path" {
 
 # Haal de AMI-ID van de instantie op
 output "ami_name" {
-  value = value = aws_instance.openvpn[count.index].ami
+  value = [for instance in aws_instance.openvpn : instance.ami]
 }
 
 # Toon de Cloudflare zone ID voor het domein
