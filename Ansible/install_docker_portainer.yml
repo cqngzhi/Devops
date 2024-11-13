@@ -1,6 +1,6 @@
 ---
 - name: Install Docker and Portainer
-  hosts: servers
+  hosts: web_servers
   become: yes
   tasks:
     - name: Update apt package index
