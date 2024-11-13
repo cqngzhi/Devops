@@ -25,6 +25,20 @@ variable "counter" {
   description = "Number of instances to create"
 }
 
+# Variabele voor de ami id
+variable "ami_id" {
+  description = "AMI ID for the EC2 instance"
+  type        = string
+  default     = "ami-0e86e20dae9224db8"  
+}
+
+# Variabele voor de instance type
+variable "instance_type" {
+  description = "Type of the EC2 instance"
+  type        = string
+  default     = "t2.micro"
+}
+
 # Variabele voor de Cloudflare API-token
 variable "cloudflare_api_token" {
   description = "Cloudflare API token"
