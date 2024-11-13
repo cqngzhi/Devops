@@ -10,6 +10,13 @@ resource "aws_key_pair" "generated_key" {
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
+# Maak de map aan (als deze niet bestaat)
+resource "null_resource" "create_ssh_key_directory" {
+  provisioner "local-exec" {
+    command = "mkdir -p ${var.ssh_key_directory}"  
+  }
+}
+
 # Sla de privé-sleutel lokaal op als een bestand
 resource "local_file" "private_key" {
   content         = tls_private_key.ssh_key.private_key_pem
@@ -20,8 +27,8 @@ resource "local_file" "private_key" {
 # Maak een EC2-instantie aan in AWS
 resource "aws_instance" "openvpn" {
   count                       = var.counter
-  ami                         = "ami-0e86e20dae9224db8"
-  instance_type               = "t2.micro"
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
   key_name                    = aws_key_pair.generated_key.key_name
   security_groups             = [aws_security_group.security.id]
   associate_public_ip_address = true
