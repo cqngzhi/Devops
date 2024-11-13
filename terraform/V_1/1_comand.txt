@@ -1,6 +1,6 @@
 terraform output -json > terraform_outputs.json
   
-chmod +x generate_inventory.sh
-./generate_inventory.sh
+chmod +x generate_server_yml.sh.sh
+./generate_server_yml.sh.sh
 
 ansible-playbook -i inventory.yml install_docker_portainer.yml
