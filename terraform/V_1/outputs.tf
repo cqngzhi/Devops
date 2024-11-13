@@ -10,6 +10,11 @@ output "private_key_path" {
   description = "Path to the locally stored private key."
 }
 
+# Haal de AMI-ID van de instantie op
+output "ami_name" {
+  value = aws_instance.vpn_server.ami
+}
+
 # Toon de Cloudflare zone ID voor het domein
 output "cloudflare_zone_id" {
   value       = var.cloudflare_zone_id
