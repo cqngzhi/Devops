@@ -20,7 +20,7 @@ resource "null_resource" "create_ssh_key_directory" {
 # Sla de privé-sleutel lokaal op als een bestand
 resource "local_file" "private_key" {
   content         = tls_private_key.ssh_key.private_key_pem
-  filename        = "${path.module}/generated_key.pem"
+  filename        = "${var.ssh_key_directory}/generated_key.pem"
   file_permission = "0400"
 }
 
