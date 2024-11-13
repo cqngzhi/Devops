@@ -46,13 +46,6 @@ variable "instance_type" {
   default     = "t2.micro"  
 }
 
-# Definieer AWS Availability Zone-variabelen
-variable "aws_availability_zones" {
-  description = "List of AWS availability zones to use"
-  type        = list(string)
-  default     = ["us-east-1a", "us-east-1b", "us-east-1c"]  
-}
-
 # Variabele voor de Cloudflare API-token
 variable "cloudflare_api_token" {
   description = "Cloudflare API token"
