@@ -4,9 +4,9 @@
 TARGET_DIR="/home/jiaqi/DevOps_Project/Ansible"
 
 # Extraheer terraform-uitvoerwaarden
-server_ip=$(jq -r '.server_public_ip.value' terraform_outputs.json)
-ssh_key_path=$(jq -r '.ssh_key_path.value' terraform_outputs.json)
-ami_name=$(jq -r '.ami_name.value' terraform_outputs.json)
+server_ip=$(jq -r '.instance_public_ips.value[0]' terraform_outputs.json)
+ssh_key_path=$(jq -r '.private_key_path.value' terraform_outputs.json)
+ami_name=$(jq -r '.ami_name.value[0]' terraform_outputs.json)
 
 # Debug output
 echo "Server IP: ${server_ip}"
@@ -45,3 +45,4 @@ all:
 EOF
 
 echo "inventory.yaml has been generated successfully in $TARGET_DIR."
+
