@@ -43,7 +43,7 @@ variable "ami_id" {
 variable "instance_type" {
   description = "Type of the EC2 instance"
   type        = string
-  default     = "t2.micro"
+  default     = "t2.micro"  
 }
 
 # Definieer AWS Availability Zone-variabelen
