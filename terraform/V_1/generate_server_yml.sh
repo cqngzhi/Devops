@@ -6,9 +6,14 @@ TARGET_DIR="/home/jiaqi/DevOps_Project/Ansible"
 # Extraheer terraform-uitvoerwaarden
 server_ip=$(jq -r '.server_public_ip.value' terraform_outputs.json)
 ssh_key_path=$(jq -r '.ssh_key_path.value' terraform_outputs.json)
+ami_name=$(jq -r '.ami_name.value' terraform_outputs.json)
+
+# Debug output
+echo "Server IP: ${server_ip}"
+echo "SSH Key Path: ${ssh_key_path}"
+echo "AMI Name: ${ami_name}"
 
 # Stel anible_user in op basis van mogelijke besturingssysteemtypen
-ami_name=$(jq -r '.ami_name.value' terraform_outputs.json)
 if [[ "$ami_name" == *"ubuntu"* ]]; then
   ansible_user="ubuntu"
 elif [[ "$ami_name" == *"amzn"* || "$ami_name" == *"amazon"* ]]; then
@@ -18,6 +23,9 @@ elif [[ "$ami_name" == *"centos"* ]]; then
 else
   ansible_user="admin"
 fi
+
+# Debug output for ansible_user
+echo "Ansible User: ${ansible_user}"
 
 # Maak het inventory.yaml-bestand en schrijf het naar de opgegeven map
 cat <<EOF > "$TARGET_DIR/inventory.yaml"
