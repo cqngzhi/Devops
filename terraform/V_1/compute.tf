@@ -27,7 +27,7 @@ resource "local_file" "private_key" {
 # Maak een EC2-instantie aan in AWS
 resource "aws_instance" "openvpn" {
   count                       = var.counter
-  ami                         = var.ami_id
+  ami                         = var.ami_id 
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.generated_key.key_name
   availability_zone           = var.aws_availability_zones[count.index]
