@@ -26,5 +26,5 @@ provider "aws" {
 # Configureer de Cloudflare provider
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
-  account_id = var.cloudflare_account_id
+ # account_id = var.cloudflare_account_id
 }
