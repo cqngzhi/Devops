@@ -84,5 +84,5 @@ variable "domain" {
 variable "ssh_key_directory" {
   description = "Directory to store SSH private key"
   type        = string
-  default     = "/home/jiaqi/OPENVPN/SSH_KEY"   
+  default     = "/home/jiaqi/DevOps_Project/SSH_KEY"   
 }
