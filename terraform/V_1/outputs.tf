@@ -26,9 +26,3 @@ output "openvpn_dns_record" {
   value       = cloudflare_record.openvpn_dns.hostname
   description = "The DNS record for the OpenVPN instance."
 }
-
-# Voer het token uit voor later gebruik
-output "cloudflare_tunnel_token" {
-  value = cloudflare_tunnel.openvpn_tunnel.token  
-  sensitive = true  
-}
