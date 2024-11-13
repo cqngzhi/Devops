@@ -30,7 +30,7 @@ resource "aws_instance" "openvpn" {
   ami                         = var.ami_id 
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.generated_key.key_name
-  availability_zone           = "us-east-1a"
+  availability_zone           = "us-east-1c"
   security_groups             = [aws_security_group.security.id]
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.subnet.id
