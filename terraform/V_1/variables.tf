@@ -38,3 +38,9 @@ variable "cloudflare_account_id" {
   type        = string
   sensitive   = true
 }
+
+# Variabele voor de Cloudflare Zone-ID
+variable "cloudflare_zone_id" {
+  description = "Cloudflare zone ID"
+  type        = string
+}
