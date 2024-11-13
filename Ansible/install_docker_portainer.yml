@@ -44,7 +44,7 @@
           - /var/run/docker.sock:/var/run/docker.sock
         command: -H unix:///var/run/docker.sock
         
-    - name: Open firewall port 9443 for HTTPS
+    - name: Open firewall port 9443 for Portainer CE
       ufw:
         rule: allow
         name: 'Allow Port 9443'
