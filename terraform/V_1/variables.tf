@@ -65,3 +65,10 @@ variable "domain" {
   description = "Your domain for Cloudflare"
   type        = string
 }
+
+# Specificeer mappad
+variable "ssh_key_directory" {
+  description = "Directory to store SSH private key"
+  type        = string
+  default     = "/home/jiaqi/OPENVPN/SSH_KEY"   
+}
