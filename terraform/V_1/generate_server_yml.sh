@@ -13,19 +13,8 @@ echo "Server IP: ${server_ip}"
 echo "SSH Key Path: ${ssh_key_path}"
 echo "AMI Name: ${ami_name}"
 
-# Stel anible_user in op basis van mogelijke besturingssysteemtypen
-if [[ "$ami_name" == *"ubuntu"* ]]; then
-  ansible_user="ubuntu"
-elif [[ "$ami_name" == *"amzn"* || "$ami_name" == *"amazon"* ]]; then
-  ansible_user="ec2-user"
-elif [[ "$ami_name" == *"centos"* ]]; then
-  ansible_user="centos"
-else
-  ansible_user="admin"
-fi
-
-# Debug output for ansible_user
-echo "Ansible User: ${ansible_user}"
+# ansible_user is 
+ansible_user="ubuntu"
 
 # Check if inventory.yaml already exists and print a message
 if [ -f "$TARGET_DIR/inventory.yaml" ]; then
