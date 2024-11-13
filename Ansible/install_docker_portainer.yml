@@ -45,7 +45,7 @@
       debug:
         var: docker_version.stdout
 
-    - name: Install Portainer CE
+- name: Install Portainer CE
       docker_container:
         name: portainer
         image: portainer/portainer-ce:latest
@@ -60,11 +60,11 @@
     - name: Open firewall port 9443 for Portainer CE
       ufw:
         rule: allow
-        name: 'Allow Port 9443'
-        port: '9443'
+        name: '9443'
+        port: 9443
         proto: tcp
         state: enabled
-        
+
     - name: Verify Portainer is running
       uri:
         url: https://localhost:9443
