@@ -1,1 +1,62 @@
+---
+- name: Install Docker and Portainer
+  hosts: web_servers
+  become: yes
+  tasks:
+    - name: Update apt repository and install dependencies
+      apt:
+        update_cache: yes
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
 
+    - name: Add Docker’s official GPG key
+      command: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+    - name: Set up the Docker repository
+      apt_repository:
+        repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable'
+        state: present
+
+    - name: Install Docker Engine
+      apt:
+        name: docker-ce
+        state: latest
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Portainer CE
+      docker_container:
+        name: portainer
+        image: portainer/portainer-ce:latest
+        state: started
+        restart_policy: always
+        published_ports:
+          - "9443:9443"
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+        command: -H unix:///var/run/docker.sock
+        
+    - name: Open firewall port 9443 for HTTPS
+      ufw:
+        rule: allow
+        name: 'Allow Port 9443'
+        port: '9443'
+        proto: tcp
+        state: enabled
+        
+    - name: Verify Portainer is running
+      uri:
+        url: https://localhost:9443
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: portainer_check
+      failed_when: portainer_check.status != 200
