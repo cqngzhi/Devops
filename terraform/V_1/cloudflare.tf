@@ -14,27 +14,11 @@ resource "cloudflare_tunnel" "openvpn_tunnel" {
   name       = "openvpn-tunnel"
 }
 
-# Genereer en bewaar het inloggegevensbestand van de tunnel
-resource "cloudflare_tunnel_config" "openvpn_tunnel_config" {
-  tunnel_id = cloudflare_tunnel.openvpn_tunnel.id
-  config    = jsonencode({
-    ingress = [
-      {
-        hostname = "openvpn.${var.domain}"  
-        service  = "tcp://localhost:1194"   
-      },
-      {
-        service = "http_status:404"
-      }
-    ]
-  })
-}
-
 # Configureer DNS-records zodat ze naar Cloudflare Tunnel verwijzen
 resource "cloudflare_record" "openvpn_dns_tunnel" {
   zone_id = var.cloudflare_zone_id  
   name    = "openvpn"
   type    = "CNAME"
-  content = cloudflare_tunnel.example_tunnel.cname
+  content = cloudflare_tunnel.openvpn_tunnel.cname
   proxied = true
 }
