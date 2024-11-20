@@ -1,0 +1,8 @@
+FROM debian:stable-slim
+
+RUN apt-get update && apt-get install -y openvpn iproute2 && \
+    rm -rf /var/lib/apt/lists/*
+
+EXPOSE 1194/udp
+EXPOSE 443/tcp
+CMD ["openvpn", "--config", "/etc/openvpn/server.conf"]

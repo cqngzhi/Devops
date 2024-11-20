@@ -1,0 +1,10 @@
+terraform output -json > terraform_outputs.json
+
+ls -ld /home/jiaqi/DevOps_Project/Ansible
+chmod +w /home/jiaqi/DevOps_Project/Ansible
+
+
+chmod +x generate_server_yml.sh
+./generate_server_yml.sh
+
+ansible-playbook -i inventory.yaml install_docker_portainer.yml

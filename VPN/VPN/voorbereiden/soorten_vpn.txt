@@ -1,0 +1,68 @@
+OpenVPN
+# Beveiliging: OpenVPN staat bekend om zijn sterke beveiliging. Het ondersteunt verschillende encryptie-algoritmen en is betrouwbaar.
+# Compatibiliteit: Het is compatibel met veel platforms (Windows, macOS, Linux, Android, iOS) en wordt vaak gebruikt in commerciële VPN-diensten.
+# Prestaties: Hoewel het stabiel is, kan OpenVPN iets langzamer zijn vergeleken met nieuwere VPN-protocollen zoals WireGuard, vooral op mobiele netwerken.
+# Configuratie: Flexibel, maar het kan complex zijn om in te stellen en te beheren, vooral als je handmatig configuraties uitvoert.
+# Beste voor: Wie maximale controle en brede compatibiliteit wil, vooral voor commerciële toepassingen.
+
+WireGuard
+# Beveiliging: WireGuard is relatief nieuw maar zeer veilig. Het maakt gebruik van moderne cryptografische technieken.
+# Prestaties: WireGuard staat bekend om zijn snelheid en eenvoud. Het is lichter en sneller dan OpenVPN vanwege een efficiënter codeontwerp.
+# Compatibiliteit: Minder compatibel dan OpenVPN, maar werkt op de meeste populaire platforms (Linux, Windows, macOS, Android, iOS).
+# Configuratie: Zeer eenvoudig op te zetten en te beheren. Het gebruikt veel minder configuratiebestanden dan OpenVPN.
+# Beste voor: Als je op zoek bent naar hoge snelheid en eenvoud, ideaal voor moderne netwerken.
+
+SoftEther
+# Beveiliging: SoftEther ondersteunt meerdere VPN-protocollen (inclusief OpenVPN, L2TP, IPsec, en SSTP), waardoor het zeer veelzijdig is. Het biedt sterke beveiliging.
+# Prestaties: SoftEther is erg snel en presteert goed, zelfs in netwerken met veel beperkingen. Het staat bekend om zijn goede prestaties bij hoge snelheid en lage latency.
+# Compatibiliteit: Zeer compatibel met veel platforms en ondersteunt verschillende VPN-protocollen binnen één framework.
+# Configuratie: Flexibel, maar de configuratie kan wat ingewikkelder zijn door de vele opties en protocollen die worden ondersteund.
+# Beste voor: Bedrijfsmatige omgevingen waar flexibiliteit en ondersteuning van meerdere protocollen vereist is.
+
+IPsec (Internet Protocol Security)
+# Beveiliging: IPsec is een suite van protocollen die gegevens op IP-niveau beveiligt. Het wordt vaak gebruikt in combinatie met andere protocollen zoals L2TP (Layer 2 Tunneling Protocol) om veilige VPN-tunnels te creëren.
+# Compatibiliteit: Ondersteund door veel routers en apparaten, inclusief mobiele telefoons, en geïntegreerd in veel besturingssystemen (Windows, macOS, Linux).
+# Prestaties: Hoewel stabiel en betrouwbaar, kan het trager zijn dan modernere protocollen zoals WireGuard.
+# Beste voor: Traditionele VPN-implementaties, vooral in zakelijke netwerken.
+
+IKEv2 (Internet Key Exchange version 2)
+# Beveiliging: Een zeer veilig VPN-protocol dat wordt gebruikt in combinatie met IPsec. Het biedt sterke versleuteling en is goed bestand tegen netwerkstoringen, vooral voor mobiele netwerken.
+# Compatibiliteit: Ondersteund door de meeste moderne apparaten en besturingssystemen zoals Windows, macOS, iOS en Android.
+# Prestaties: Snelle prestaties en stabiel, vooral bij het wisselen tussen netwerken (bijvoorbeeld van Wi-Fi naar 4G).
+# Beste voor: Mobiele gebruikers die een stabiele verbinding en goede beveiliging nodig hebben.
+
+L2TP/IPsec (Layer 2 Tunneling Protocol met IPsec)
+# Beveiliging: L2TP zelf biedt geen encryptie, maar wordt meestal gecombineerd met IPsec voor beveiliging.
+# Compatibiliteit: Beschikbaar op de meeste besturingssystemen (Windows, macOS, Linux, iOS, Android).
+# Prestaties: Iets trager dan andere protocollen vanwege de dubbele encapsulatie (L2TP en IPsec), maar nog steeds populair.
+# Beste voor: Eenvoudige VPN-oplossingen die compatibiliteit met oudere systemen vereisen.
+
+PPTP (Point-to-Point Tunneling Protocol)
+# Beveiliging: Minder veilig dan moderne protocollen; de encryptie wordt als achterhaald beschouwd.
+# Compatibiliteit: Beschikbaar op bijna alle platforms, inclusief oudere versies van Windows en mobiele apparaten.
+# Prestaties: Zeer snel vanwege zijn eenvoudige encryptie, maar niet aanbevolen vanwege de zwakke beveiliging.
+# Beste voor: Situaties waarin snelheid belangrijker is dan veiligheid, maar het wordt tegenwoordig afgeraden.
+
+Shadowsocks
+# Beveiliging: Shadowsocks is geen traditioneel VPN, maar een proxy-gebaseerde tool die het SOCKS5-protocol gebruikt. Het is ontworpen om internetcensuur te omzeilen, vooral in landen met strikte beperkingen zoals China.
+# Compatibiliteit: Werkt op meerdere platforms (Windows, Linux, macOS, Android, iOS).
+# Prestaties: Zeer snel en lichtgewicht, omdat het vooral wordt gebruikt voor omzeiling en niet voor volledige VPN-beveiliging.
+Beste voor: Om
+
+OpenConnect
+# Beveiliging:
+# Compatibiliteit: Ondersteund op Linux, Windows, macOS, Android en iOS.
+# Prestaties: Snelle prestaties door gebruik te maken van moderne versleutelingstechnieken en HTTP/HTTPS-tunnels.
+# Beste voor:
+
+ZeroTier
+# Beveiliging:
+# Compatibiliteit: Werkt op meerdere platforms (Windows, macOS, Linux, Android, iOS).
+# Prestaties: ZeroTier biedt vaak hoge prestaties omdat het peer-to-peer-verbindingen gebruikt.
+# Beste voor:
+
+Hamachi (van LogMeIn)
+# Beveiliging:
+# Compatibiliteit: Werkt op Windows, macOS en Linux, maar vereist installatie van de software.
+# Prestaties:
+# Beste voor:
