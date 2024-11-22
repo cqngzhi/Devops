@@ -53,8 +53,8 @@ variable "aws_session_token" {
 }
 
 # Cloudflare Variables
-variable "cloudflare_zone_id" {
-  description = "Cloudflare Zone ID"
+variable "cloudflare_api_token" {
+  description = "Cloudflare API Token"
   type        = string
 }
 
