@@ -1,31 +1,20 @@
-# Geef de vereiste Terraform versies en providers aan
-terraform {
-  required_providers {
-    # AWS provider configuratie
-    aws = {
-      source = "hashicorp/aws"
-      version = "~> 5.0"
-    }
- # Cloudflare provider configuratie
-    cloudflare = {
-      source = "cloudflare/cloudflare"
-      version = "~> 4.0"
-    }
-  }
-  required_version = ">= 1.0"
+module "network" {
+  source = "./modules/network"
 }
 
-# Configureer de AWS provider
-provider "aws" {
-  region     = var.aws_region
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
-  token      = var.aws_session_token
+module "ec2" {
+  source            = "./modules/ec2"
+  vpc_id            = module.network.vpc_id
+  public_subnet_ids = module.network.public_subnet_ids
+  security_group_id = module.network.security_group_id
+  key_name          = var.key_name
 }
 
-# Configureer de Cloudflare provider
-provider "cloudflare" {
-  api_token = var.cloudflare_api_token
- # account_id = var.cloudflare_account_id
+resource "cloudflare_record" "s_platform_dns" {
+  zone_id = var.cloudflare_zone_id
+  name    = "www"
+  type    = "A"
+  content = module.ec2.public_ip # Elastic IP
+  ttl     = 1
+  proxied = true
 }
-
