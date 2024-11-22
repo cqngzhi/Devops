@@ -20,11 +20,6 @@ variable "ssh_key_path" {
   default     = "/home/jiaqi/social_platform/ssh_key/ansible_social_platform"
 }
 
-variable "cloudflare_zone_id" {
-  description = "Cloudflare Zone ID"
-  type        = string
-}
-
 variable "public_subnet_ids" {
   description = "List of public subnet IDs"
   type        = list(string)
@@ -54,6 +49,11 @@ variable "aws_session_token" {
   description = "AWS Session Token (optional, required for temporary credentials)"
   type        = string
   default     = ""
+}
+
+variable "cloudflare_zone_id" {
+  description = "Cloudflare Zone ID"
+  type        = string
 }
 
 variable "cloudflare_zone_id" {
