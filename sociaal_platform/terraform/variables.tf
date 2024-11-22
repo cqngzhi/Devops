@@ -29,6 +29,7 @@ variable "security_group_id" {
   description = "Security group ID"
   type        = string
 }
+
 # AWS Variables
 variable "aws_region" {
   description = "The AWS region to deploy resources in"
@@ -51,6 +52,7 @@ variable "aws_session_token" {
   default     = ""
 }
 
+# Cloudflare Variables
 variable "cloudflare_zone_id" {
   description = "Cloudflare Zone ID"
   type        = string
