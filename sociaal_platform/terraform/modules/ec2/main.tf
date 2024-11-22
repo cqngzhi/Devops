@@ -1,7 +1,7 @@
 # Elastic IP
 resource "aws_eip" "s_platform_ip" {
   count = 1
-  vpc   = true
+  domain = "vpc"
 }
 
 # Master knooppunt
