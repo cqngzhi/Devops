@@ -1,11 +1,13 @@
 variable "ami" {
   description = "Amazon Machine Image ID"
   type        = string
+  default     = "ami-0e86e20dae9224db8" # default AMI ID
 }
 
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
+  default     = "t2.micro" # default instance_type
 }
 
 variable "key_name" {
