@@ -9,6 +9,7 @@ resource "aws_instance" "master" {
   ami               = var.ami
   instance_type     = var.instance_type
   subnet_id         = var.public_subnet_ids[0]
+  vpc_security_group_ids = [var.security_group_id]
   private_ip        = "10.0.1.10"
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
@@ -30,6 +31,7 @@ resource "aws_instance" "node1" {
   ami               = var.ami
   instance_type     = var.instance_type
   subnet_id         = var.public_subnet_ids[0]
+  vpc_security_group_ids = [var.security_group_id]
   private_ip        = "10.0.1.11"
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
@@ -45,6 +47,7 @@ resource "aws_instance" "node2" {
   ami               = var.ami
   instance_type     = var.instance_type
   subnet_id         = var.public_subnet_ids[0]
+  vpc_security_group_ids = [var.security_group_id]
   private_ip        = "10.0.1.12"
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
@@ -60,6 +63,7 @@ resource "aws_instance" "node3" {
   ami               = var.ami
   instance_type     = var.instance_type
   subnet_id         = var.public_subnet_ids[0]
+  vpc_security_group_ids = [var.security_group_id]
   private_ip        = "10.0.1.13"
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
