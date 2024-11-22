@@ -1,17 +1,17 @@
-# VPC-creatie
+# VPC
 resource "aws_vpc" "s_platform_vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr_block
 
   tags = {
     Name = "s_platform_vpc"
   }
 }
 
-# Creatie van een openbaar subnet
+# Subnets
 resource "aws_subnet" "public_subnet_1" {
   vpc_id                  = aws_vpc.s_platform_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
+  cidr_block              = var.public_subnet_cidrs[0]
+  availability_zone       = var.availability_zones[0]
   map_public_ip_on_launch = true
 
   tags = {
@@ -21,8 +21,8 @@ resource "aws_subnet" "public_subnet_1" {
 
 resource "aws_subnet" "public_subnet_2" {
   vpc_id                  = aws_vpc.s_platform_vpc.id
-  cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-east-1b"
+  cidr_block              = var.public_subnet_cidrs[1]
+  availability_zone       = var.availability_zones[1]
   map_public_ip_on_launch = true
 
   tags = {
@@ -39,7 +39,7 @@ resource "aws_internet_gateway" "s_platform_igw" {
   }
 }
 
-# routeringstabel
+# Route Table
 resource "aws_route_table" "s_platform_route_table" {
   vpc_id = aws_vpc.s_platform_vpc.id
 
@@ -53,7 +53,7 @@ resource "aws_route_table" "s_platform_route_table" {
   }
 }
 
-# Routetabellen die zijn gekoppeld aan subnetten
+# Route Table Associations
 resource "aws_route_table_association" "s_platform_subnet_1_association" {
   subnet_id      = aws_subnet.public_subnet_1.id
   route_table_id = aws_route_table.s_platform_route_table.id
@@ -64,7 +64,7 @@ resource "aws_route_table_association" "s_platform_subnet_2_association" {
   route_table_id = aws_route_table.s_platform_route_table.id
 }
 
-# Beveiligingsgroep (staat SSH-, HTTP- en HTTPS-toegang toe)
+# Security Group
 resource "aws_security_group" "s_platform_sg" {
   vpc_id = aws_vpc.s_platform_vpc.id
 
@@ -101,15 +101,3 @@ resource "aws_security_group" "s_platform_sg" {
   }
 }
 
-# Netwerkinformatie uitvoeren
-output "vpc_id" {
-  value = aws_vpc.s_platform_vpc.id
-}
-
-output "public_subnet_ids" {
-  value = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
-}
-
-output "security_group_id" {
-  value = aws_security_group.s_platform_sg.id
-}
