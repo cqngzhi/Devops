@@ -5,4 +5,6 @@ aws_session_token  = "YOUR_AWS_SESSION_TOKEN"
 cloudflare_api_token = "YOUR_CLOUDFLARE_API_TOKEN"
 cloudflare_account_id = "your-cloudflare-account-id"
 cloudflare_zone_id    = "your-cloudflare-zone-i"
+public_subnet_ids = module.network.public_subnet_ids
+security_group_id = module.network.security_group_id
 
