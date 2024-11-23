@@ -4,6 +4,12 @@ resource "aws_eip" "s_platform_ip" {
   domain = "vpc"
 }
 
+# uplosd key
+resource "aws_key_pair" "ansible_social_platform" {
+  key_name   = "ansible_social_platform"  #
+  public_key = file("/home/jiaqi/sociaal_platform/ssh_key/ansible_social_platform.pub")  # key location
+}
+
 # Master knooppunt
 resource "aws_instance" "master" {
   ami               = var.ami
