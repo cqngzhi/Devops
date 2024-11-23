@@ -18,14 +18,4 @@ variable "key_name" {
   type        = string
 }
 
-variable "ami" {
-  description = "AMI ID for EC2 instances"
-  type        = string
-  default     = "ami-0e86e20dae9224db8" #  AMI ID
-}
 
-variable "instance_type" {
-  description = "Type of EC2 instance"
-  type        = string
-  default     = "t2.micro"
-}
