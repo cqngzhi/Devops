@@ -7,7 +7,7 @@ resource "aws_eip" "s_platform_ip" {
 # uplosd key
 resource "aws_key_pair" "ansible_social_platform" {
   key_name   = "ansible_social_platform"  #
-  public_key = file("/home/jiaqi/sociaal_platform/ssh_key/ansible_social_platform.pub")  # key location
+  public_key = file("/home/jiaqi/social_platform/ssh_key/ansible_social_platform.pub")  # key location
 }
 
 # Master knooppunt
