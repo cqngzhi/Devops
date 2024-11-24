@@ -72,7 +72,7 @@ resource "aws_security_group" "s_platform_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.1.10/32"]  # Bastion Host  IP 
   }
 
   ingress {
