@@ -35,6 +35,17 @@ if 'all' in inventory and 'children' in inventory['all'] and 'master' in invento
     for node_ip in list(inventory['all']['children']['master']['hosts'].keys()):
         # 将 master 部分的 IP 地址替换为公网 IP 地址
         inventory['all']['children']['master']['hosts'][bastion_ip] = inventory['all']['children']['master']['hosts'].pop(node_ip)
+# 更新 YAML 文件中的节点信息，将 Bastion 公网 IP 替换 10.0.1.10
+if 'all' in inventory and 'children' in inventory['all'] and 'nodes' in inventory['all']['children']:
+    for node_ip, node_data in inventory['all']['children']['nodes']['hosts'].items():
+        # 检查 ansible_ssh_common_args 是否存在并且包含 ProxyCommand
+        if 'ansible_ssh_common_args' in node_data:
+            # 使用正则表达式替换所有 "ubuntu@" 后面的 IP 地址
+            node_data['ansible_ssh_common_args'] = re.sub(
+                r"ssh -i .+? -W %h:%p ubuntu@(\S+)",
+                f"ssh -i /home/jiaqi/social_platform/ssh_key/ansible_social_platform -W %h:%p ubuntu@{bastion_ip}",
+                node_data['ansible_ssh_common_args']
+            )
 
 # 写回更新后的 YAML 到文件
 with open(INVENTORY_FILE, 'w') as file:
