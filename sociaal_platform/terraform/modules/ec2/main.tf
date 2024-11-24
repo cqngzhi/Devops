@@ -2,6 +2,9 @@
 resource "aws_eip" "s_platform_ip" {
   count = 1
   domain = "vpc"
+  tags = {
+    Name = "bastion_eip"
+  }
 }
 
 # uplosd key
