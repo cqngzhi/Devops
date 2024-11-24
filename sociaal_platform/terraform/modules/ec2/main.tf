@@ -45,7 +45,7 @@ resource "aws_instance" "node1" {
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
   associate_public_ip_address = false
-  vpc_security_group_ids = [aws_security_group.nodes_sg.id]
+  vpc_security_group_ids = [aws_security_group.nodes_sg.name]
   tags = {
     Name = "K8s-Node1"
   }
@@ -61,7 +61,7 @@ resource "aws_instance" "node2" {
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
   associate_public_ip_address = false
-  vpc_security_group_ids = [aws_security_group.nodes_sg.id]
+  vpc_security_group_ids = [aws_security_group.nodes_sg.name]
   tags = {
     Name = "K8s-Node2"
   }
@@ -77,7 +77,7 @@ resource "aws_instance" "node3" {
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
   associate_public_ip_address = false
-  vpc_security_group_ids = [aws_security_group.nodes_sg.id]
+  vpc_security_group_ids = [aws_security_group.nodes_sg.name]
   tags = {
     Name = "K8s-Node3"
   }
