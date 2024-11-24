@@ -1,0 +1,24 @@
+all:
+  children:
+    master:
+      hosts:
+        98.85.104.195:
+          ansible_ssh_private_key_file: /home/jiaqi/social_platform/ssh_key/ansible_social_platform
+          ansible_user: ubuntu
+    nodes:
+      hosts:
+        10.0.1.11:
+          ansible_ssh_private_key_file: /home/jiaqi/social_platform/ssh_key/ansible_social_platform
+          ansible_user: ubuntu
+          ansible_ssh_common_args: >-
+            -o ProxyCommand="ssh -i /home/jiaqi/social_platform/ssh_key/ansible_social_platform -W %h:%p ubuntu@10.0.1.10"        
+        10.0.1.12:
+          ansible_ssh_private_key_file: /home/jiaqi/social_platform/ssh_key/ansible_social_platform
+          ansible_user: ubuntu
+          ansible_ssh_common_args: >-
+            -o ProxyCommand="ssh -i /home/jiaqi/social_platform/ssh_key/ansible_social_platform -W %h:%p ubuntu@10.0.1.10"        
+        10.0.1.13:
+          ansible_ssh_private_key_file: /home/jiaqi/social_platform/ssh_key/ansible_social_platform
+          ansible_user: ubuntu
+          ansible_ssh_common_args: >-
+            -o ProxyCommand="ssh -i /home/jiaqi/social_platform/ssh_key/ansible_social_platform -W %h:%p ubuntu@10.0.1.10"        
