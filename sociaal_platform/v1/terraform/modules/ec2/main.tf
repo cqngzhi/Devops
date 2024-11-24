@@ -21,6 +21,7 @@ resource "aws_instance" "master" {
 }
 
 # Elastic IP binden aan Master knooppunt
+
 resource "aws_eip_association" "s_platform_eip" {
   instance_id   = aws_instance.master.id  # Verwijst naar de instance ID van de master
   allocation_id = aws_eip.s_platform_ip[0].id  # Verwijst naar de Elastic IP die wordt geassocieerd
