@@ -1,3 +1,7 @@
+output "public_ip_bastion" {
+  value = aws_eip.s_platform_ip[0].public_ip
+}
+
 output "ec2_public_ip" {
   value = aws_eip.s_platform_ip[0].public_ip
 }
