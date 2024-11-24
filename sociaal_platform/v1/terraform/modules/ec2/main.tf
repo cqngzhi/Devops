@@ -85,6 +85,10 @@ resource "aws_launch_template" "autoscaling_template" {
                         #!/bin/bash
                         echo "EC2 instance launched" > /var/log/ec2_startup.log
                         EOF  # Script dat bij het opstarten van de instance uitgevoerd wordt
+  # Optioneel: je kan ook tags toevoegen om de instantie beter te identificeren
+  tags = {
+    Name = "Autoscaling Instance"
+  }
 }
 
 # Creëert een Auto Scaling groep
