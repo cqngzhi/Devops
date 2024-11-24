@@ -32,15 +32,24 @@ output "security_group_id" {
 }
 
 # De ARN van de Auto Scaling groep, handig voor het beheren van schaling en monitoring
-output "asg_arn" {
+output "instance_arn" {
   description = "De ARN van de Auto Scaling groep"  # ARN voor de Auto Scaling groep
   value       = aws_autoscaling_group.asg.arn  # Verwijst naar de ARN van de Auto Scaling groep
 }
 
-# EC2 instance ID's, handig voor toegang tot specifieke instances of debugging
+# Output voor de Elastic IP die aan de master is gekoppeld
+output "master_eip" {
+  value = aws_eip.s_platform_ip[0].public_ip  # Het publieke IP van de Elastic IP
+}
+
+# Output voor de EC2 Instances ID's
 output "ec2_instance_ids" {
-  description = "ID's van de EC2-instanties"  # ID's van de EC2-instanties
-  value       = aws_instance.example[*].id  # Geeft een lijst van EC2 instance ID's
+  value = [
+    aws_instance.master.id,
+    aws_instance.node1.id,
+    aws_instance.node2.id,
+    aws_instance.node3.id
+  ]  # Lijst van de EC2 instance ID's
 }
 
 # De back-upplan ARN, handig voor back-up en herstelbeheer
