@@ -7,6 +7,7 @@ module "ec2" {
   vpc_id            = module.network.vpc_id
   public_subnet_ids = module.network.public_subnet_ids
   security_group_id = module.network.security_group_id
+  nodes_sg_id  = module.network.nodes_sg_id
   key_name          = var.key_name
 }
 
