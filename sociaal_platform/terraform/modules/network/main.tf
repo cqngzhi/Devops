@@ -100,4 +100,25 @@ resource "aws_security_group" "s_platform_sg" {
     Name = "s_platform_security_group"
   }
 }
+# Nodes Security Group
+resource "aws_security_group" "nodes_sg" {
+  vpc_id = aws_vpc.s_platform_vpc.id
 
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.1.10/32"] # 仅允许 Bastion Host 访问
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "nodes_security_group"
+  }
+}
