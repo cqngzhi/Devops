@@ -40,12 +40,11 @@ resource "aws_instance" "node1" {
   ami               = var.ami
   instance_type     = var.instance_type
   subnet_id         = var.public_subnet_ids[0]
-  vpc_security_group_ids = [var.security_group_id]
+  vpc_security_group_ids = [aws_security_group.nodes_sg.name]
   private_ip        = "10.0.1.11"
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
   associate_public_ip_address = false
-  vpc_security_group_ids = [aws_security_group.nodes_sg.name]
   tags = {
     Name = "K8s-Node1"
   }
@@ -56,12 +55,11 @@ resource "aws_instance" "node2" {
   ami               = var.ami
   instance_type     = var.instance_type
   subnet_id         = var.public_subnet_ids[0]
-  vpc_security_group_ids = [var.security_group_id]
+  vpc_security_group_ids = [aws_security_group.nodes_sg.name]
   private_ip        = "10.0.1.12"
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
   associate_public_ip_address = false
-  vpc_security_group_ids = [aws_security_group.nodes_sg.name]
   tags = {
     Name = "K8s-Node2"
   }
@@ -72,12 +70,11 @@ resource "aws_instance" "node3" {
   ami               = var.ami
   instance_type     = var.instance_type
   subnet_id         = var.public_subnet_ids[0]
-  vpc_security_group_ids = [var.security_group_id]
+  vpc_security_group_ids = [aws_security_group.nodes_sg.name]
   private_ip        = "10.0.1.13"
   key_name          = var.key_name
   security_groups   = [var.security_group_id]
   associate_public_ip_address = false
-  vpc_security_group_ids = [aws_security_group.nodes_sg.name]
   tags = {
     Name = "K8s-Node3"
   }
