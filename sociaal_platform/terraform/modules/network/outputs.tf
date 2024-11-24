@@ -12,3 +12,9 @@ output "security_group_id" {
   description = "ID of the created security group"
   value       = aws_security_group.s_platform_sg.id
 }
+
+output "nodes_sg_id" {
+  value = aws_security_group.nodes_sg.id
+}
+
+
