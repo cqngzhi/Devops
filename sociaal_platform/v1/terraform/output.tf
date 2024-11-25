@@ -34,7 +34,7 @@ output "security_group_id" {
 # De ARN van de Auto Scaling groep, handig voor het beheren van schaling en monitoring
 output "instance_arn" {
   description = "De ARN van de Auto Scaling groep"  # ARN voor de Auto Scaling groep
-  value       = aws_autoscaling_group.asg.arn  # Verwijst naar de ARN van de Auto Scaling groep
+  value       = "arn:aws:ec2:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.my_instance.id}"  # Verwijst naar de ARN van de Auto Scaling groep
 }
 
 # Output voor de Elastic IP die aan de master is gekoppeld
