@@ -32,9 +32,15 @@ output "security_group_id" {
 }
 
 # De ARN van de Auto Scaling groep, handig voor het beheren van schaling en monitoring
-output "instance_arn" {
+output "asg_arn" {
   description = "De ARN van de Auto Scaling groep"  # ARN voor de Auto Scaling groep
-  value       = "arn:aws:ec2:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.my_instance.id}"  # Verwijst naar de ARN van de Auto Scaling groep
+  value       = aws_autoscaling_group.asg.arn  # Verwijst naar de ARN van de Auto Scaling groep
+}
+
+# EC2 instance ID's, handig voor toegang tot specifieke instances of debugging
+output "ec2_instance_ids" {
+  description = "ID's van de EC2-instanties"  # ID's van de EC2-instanties
+  value       = aws_instance.example[*].id  # Geeft een lijst van EC2 instance ID's
 }
 
 # Output voor de Elastic IP die aan de master is gekoppeld
@@ -68,4 +74,8 @@ output "asg_instance_count" {
 output "backup_schedule" {
   description = "Het schema voor de back-ups"  # Het cron-formaat voor het back-up schema
   value       = var.backup_schedule  # Het back-up schema dat we hebben ingesteld
+}
+
+output "ec2_instance_arn" {
+  value = "arn:aws:ec2:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.my_instance.id}"
 }
