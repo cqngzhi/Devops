@@ -71,6 +71,11 @@ variable "backup_schedule" {
   default     = "cron(0 12 * * ? *)"  # Standaard back-up schema
 }
 
+variable "ec2_instance_arn" {
+  description = "ARN van de EC2 instance"
+  type        = string
+}
+
 # Variabele voor de AWS toegangssleutel
 variable "aws_access_key" {
   description = "AWS access key"
