@@ -59,24 +59,27 @@ variable "asg_desired_capacity" {
 }
 
 # Back-up variabelen
-variable "backup_retention_days" {
-  description = "Aantal dagen dat de back-ups bewaard moeten blijven"  # Aantal dagen voor back-upretentie
-  type        = number
-  default     = 30  # Standaard aantal dagen
+variable "backup_schedule" {
+  description = "Back-up schema in cron formaat"  # Cron-formaat voor het back-up schema
+  type        = string
+  default     = "cron(0 11 * * ? *)"  # Standaard back-up schema
 }
 
-variable "backup_schedule" {
-  description = "Back-up schema in cron formaat"  # Het cron-formaat voor back-up schema
-  type        = string
-  default     = "cron(0 12 * * ? *)"  # Standaard back-up schema
+variable "backup_retention_days" {
+  description = "Aantal dagen dat de back-ups bewaard moeten blijven"  # Hoeveel dagen de back-ups bewaard moeten blijven
+  type        = number
+  default     = 14  # Standaard aantal dagen voor back-up retentie
 }
 
 variable "ec2_instance_arn" {
-  description = "ARN van de EC2 instance"
+  description = "ARN van de EC2 instance"  # ARN van de EC2 instance voor back-up
   type        = string
-  default     = "arn:aws:ec2:region:account-id:instance/instance-id"  # 
 }
 
+variable "backup_iam_role_arn" {
+  description = "ARN van de IAM rol voor back-up"  # ARN van de IAM rol die de back-up uitvoert
+  type        = string
+}
 
 # Variabele voor de AWS toegangssleutel
 variable "aws_access_key" {
