@@ -1,30 +1,34 @@
-resource "aws_backup_vault" "default" {
-  name = "default-backup-vault"
+# Backup Vault Resource
+resource "aws_backup_vault" "my_vault" {
+  name = "my-backup-vault"
   tags = {
-    Name = "default-backup-vault"
+    Name = "my-backup-vault"  # Naam van de Backup Vault
   }
 }
 
-# Creëert een back-upplan
-resource "aws_backup_plan" "ec2_backup_plan" {
-  name = "ec2-backup-plan"  # Naam van het back-up plan
+# Backup Plan Resource
+resource "aws_backup_plan" "my_back_plan" {
+  name = "my-backup-plan"
 
   rule {
-    rule_name         = "daily-backup"  # Naam van de back-up regel
-    target_backup_vault_name = "default"  # Doel-backup vault
-    schedule          = var.backup_schedule  # Het back-up schema
+    rule_name         = "my-backup-rule"  # Naam van de back-up regel
+    target_vault_name = aws_backup_vault.my_vault.name  # Dynamisch de naam van de Backup Vault gebruiken
+    schedule          = var.backup_schedule  # Gebruik de ingevoerde back-up schema variabele
+    completion_window = 60  # Maximale tijd in minuten voor de back-up voltooiing
+
     lifecycle {
-      delete {
-        after = var.backup_retention_days  # Verwijder de back-up na de retentieperiode
-      }
+      delete_after = var.backup_retention_days  # Gebruik de variabele voor de retentieperiode van de back-up
     }
   }
 }
 
-# Creëert een back-up selectie
-resource "aws_backup_selection" "ec2_backup_selection" {
-  plan_id          = aws_backup_plan.ec2_backup_plan.id  # Verwijst naar het back-up plan
-  name             = "ec2-backup-selection"  # Naam van de selectie
-  iam_role_arn     = "arn:aws:iam::aws_account_id:role/aws-backup-role"  # IAM rol voor back-up
-  resources = [var.ec2_instance_arn]  # Verwijst naar de EC2 instance ARN
+# Backup Selection Resource
+resource "aws_backup_selection" "myselection" {
+  iam_role_arn = var.backup_iam_role_arn  # Dynamisch de ARN van de IAM rol gebruiken
+  name         = "test_selection"  # Naam van de back-up selectie
+  plan_id      = aws_backup_plan.my_back_plan.id  # Verwijst naar het eerder gedefinieerde back-up plan
+
+  resources = [
+    var.ec2_instance_arn  # Gebruik de variabele voor de ARN van de EC2 instance die geback-upt moet worden
+  ]
 }
