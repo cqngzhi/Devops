@@ -74,7 +74,9 @@ variable "backup_schedule" {
 variable "ec2_instance_arn" {
   description = "ARN van de EC2 instance"
   type        = string
+  default     = "arn:aws:ec2:region:account-id:instance/instance-id"  # 
 }
+
 
 # Variabele voor de AWS toegangssleutel
 variable "aws_access_key" {
