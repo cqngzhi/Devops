@@ -24,9 +24,6 @@ module "ec2" {
 # Laadt de back-up module
 module "backup" {
   source = "./modules/backup"
-  backup_retention_days = var.backup_retention_days  # 
-  backup_schedule       = var.backup_schedule       # 
-
   backup_retention_days = var.backup_retention_days  # Hoeveel dagen de back-ups bewaard moeten worden
   backup_schedule       = var.backup_schedule  # Het schema voor de back-up (cron-formaat)
   ec2_instance_arn      = module.ec2.instance_arn  # ARN van de EC2 instance
