@@ -1,3 +1,10 @@
+resource "aws_backup_vault" "default" {
+  name = "default-backup-vault"
+  tags = {
+    Name = "default-backup-vault"
+  }
+}
+
 # Creëert een back-upplan
 resource "aws_backup_plan" "ec2_backup_plan" {
   name = "ec2-backup-plan"  # Naam van het back-up plan
