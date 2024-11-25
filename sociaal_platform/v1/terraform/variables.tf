@@ -25,6 +25,7 @@ variable "availability_zones" {
 variable "ami" {
   description = "AMI ID voor EC2 instances"  # ID van de AMI die gebruikt zal worden
   type        = string
+  default     = "ami-0e86e20dae9224db8" # default AMI ID
 }
 
 variable "instance_type" {
