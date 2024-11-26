@@ -60,3 +60,12 @@ output "asg_instance_count" {
   value       = aws_autoscaling_group.asg.desired_capacity  # Aantal EC2-instanties in de Auto Scaling groep
 }
 
+output "account_id" {
+  description = "Selected AWS Account ID"
+  value       = data.aws_caller_identity.current.account_id
+}
+
+output "region" {
+  description = "Details about selected AWS region"
+  value       = data.aws_region.current.name
+}
