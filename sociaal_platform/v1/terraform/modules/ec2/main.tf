@@ -1,3 +1,6 @@
+data "aws_caller_identity" "current" {} # data.aws_caller_identity.current.account_id
+data "aws_region" "current" {} # data.aws_region.current.name
+
 # Upload de SSH sleutel
 resource "aws_key_pair" "ansible_social_platform" {
   key_name   = "ansible_social_platform"  # Naam van de SSH-sleutel
