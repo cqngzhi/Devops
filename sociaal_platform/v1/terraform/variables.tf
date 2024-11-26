@@ -10,12 +10,6 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"  # Standaard CIDR-blok voor de VPC en publieke subnetten
 }
 
-variable "public_subnet_ids" {
-  description = "Publieke subnet IDs"
-  type        = list(string)
-  default     = "10.0.0.0/16"  # Standaard CIDR-blok voor de VPC en publieke subnetten
-}
-
 variable "private_subnets" {
   description = "Private subnetten CIDR-blokken"  # CIDR-blokken voor private subnetten
   type        = list(string)
