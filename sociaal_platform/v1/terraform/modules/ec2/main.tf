@@ -11,7 +11,7 @@ resource "aws_key_pair" "ansible_social_platform" {
 resource "aws_instance" "master" {
   ami               = var.ami  # Het AMI-ID dat gebruikt wordt voor de instance
   instance_type     = var.instance_type  # Het type van de instance (bijv. t2.micro)
-  subnet_id         = var.public_subnet_ids[0]  # Het subnet waarin de instance komt
+  subnet_id         = var.private_subnets  # Het subnet waarin de instance komt
   vpc_security_group_ids = [var.security_group_id]  # De beveiligingsgroep ID's
   private_ip        = "10.0.1.10"  # Het private IP-adres voor deze instance
   key_name          = var.key_name  # De naam van de SSH-sleutel
@@ -33,7 +33,7 @@ resource "aws_eip_association" "s_platform_eip" {
 resource "aws_instance" "node1" {
   ami               = var.ami
   instance_type     = var.instance_type
-  subnet_id         = var.public_subnet_ids[0]
+  subnet_id         = var.private_subnets
   vpc_security_group_ids = [aws_vpc.s_platform_vpc.id]  # Verwijst naar de security group voor nodes
   private_ip        = "10.0.1.11"
   key_name          = var.key_name
@@ -49,7 +49,7 @@ resource "aws_instance" "node1" {
 resource "aws_instance" "node2" {
   ami               = var.ami
   instance_type     = var.instance_type
-  subnet_id         = var.public_subnet_ids[0]
+  subnet_id         = var.private_subnets
   vpc_security_group_ids = [aws_vpc.s_platform_vpc.id]
   private_ip        = "10.0.1.12"
   key_name          = var.key_name
@@ -65,7 +65,7 @@ resource "aws_instance" "node2" {
 resource "aws_instance" "node3" {
   ami               = var.ami
   instance_type     = var.instance_type
-  subnet_id         = var.public_subnet_ids[0]
+  subnet_id         = var.private_subnets
   vpc_security_group_ids =  [aws_vpc.s_platform_vpc.id]
   private_ip        = "10.0.1.13"
   key_name          = var.key_name
@@ -100,7 +100,7 @@ resource "aws_autoscaling_group" "asg" {
   desired_capacity     = var.asg_desired_capacity  # Gewenste capaciteit
   max_size             = var.asg_max_size  # Maximale capaciteit
   min_size             = var.asg_min_size  # Minimale capaciteit
-  vpc_zone_identifier  = var.private_subnet_ids  # De subnets voor de Auto Scaling groep
+  vpc_zone_identifier  = var.private_subnets  # De subnets voor de Auto Scaling groep
   launch_template {
     id      = aws_launch_template.autoscaling_template.id  # Verwijst naar de launch template
     version = "$Latest"  # Gebruik de laatste versie van de template
