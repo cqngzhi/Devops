@@ -6,18 +6,6 @@ resource "aws_vpc" "main" {
   }
 }
 
-# Creëert publieke subnets
-resource "aws_subnet" "public" {
-  count = length([var.vpc_cidr])  # Aantal publieke subnets
-  cidr_block              = var.public_subnet_ids  # CIDR voor het publieke subnet
-  vpc_id                  = aws_vpc.main.id  # Verwijst naar de VPC
-  availability_zone       = var.availability_zones  # Beschikbare zone voor het subnet
-  map_public_ip_on_launch = true  # Zorg ervoor dat de instances een publiek IP krijgen
-  tags = {
-    Name = "public-subnet-${count.index}"  # Naam van het subnet
-  }
-}
-
 # Creëert private subnets
 resource "aws_subnet" "private" {
   count = length(var.private_subnets)  # Aantal private subnets
