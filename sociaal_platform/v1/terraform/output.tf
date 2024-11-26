@@ -13,12 +13,6 @@ output "vpc_cidr" {
   value       = aws_vpc.main.cidr_block  # Het CIDR-blok van de VPC resource
 }
 
-# De publieke subnetten ID's, nuttig voor bijvoorbeeld het verbinden van de EC2-instanties
-output "public_subnet_ids" {
-  description = "ID's van de publieke subnetten"  # De ID's van de publieke subnetten
-  value       = aws_subnet.public[*].id  # Geeft een lijst van ID's van de publieke subnetten
-}
-
 # De private subnetten ID's, nuttig voor het beheren van beveiligde netwerkbronnen
 output "private_subnet_ids" {
   description = "ID's van de private subnetten"  # De ID's van de private subnetten
