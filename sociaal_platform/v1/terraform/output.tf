@@ -54,24 +54,9 @@ output "ec2_instance_ids" {
   ]
 }
 
-# De back-upplan ARN, handig voor back-up en herstelbeheer
-output "backup_plan_arn" {
-  description = "De ARN van het back-up plan"  # ARN van het back-up plan
-  value       = aws_backup_plan.ec2_backup_plan.arn  # Verwijst naar de ARN van het back-up plan
-}
-
 # Het aantal EC2-instanties in de Auto Scaling groep, nuttig voor schaling en beheer
 output "asg_instance_count" {
   description = "Het aantal EC2-instanties in de Auto Scaling groep"  # Aantal EC2-instanties in de Auto Scaling groep
   value       = aws_autoscaling_group.asg.desired_capacity  # Aantal EC2-instanties in de Auto Scaling groep
 }
 
-# Het schema van de back-ups, handig om te weten wanneer back-ups plaatsvinden
-output "backup_schedule" {
-  description = "Het schema voor de back-ups"  # Het cron-formaat voor het back-up schema
-  value       = var.backup_schedule  # Het back-up schema dat we hebben ingesteld
-}
-
-output "ec2_instance_arn" {
-  value = "arn:aws:ec2:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.my_instance.id}"
-}
