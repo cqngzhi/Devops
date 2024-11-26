@@ -14,7 +14,6 @@ module "ec2" {
   ami               = var.ami  # Het ID van de AMI
   instance_type     = var.instance_type  # EC2 instance type
   key_name          = var.key_name  # De naam van het SSH sleutel
-  public_subnet_ids  = module.network.public_subnet_ids
   private_subnet_ids = module.network.private_subnet_ids  # IDs van private subnets
   security_group_id = module.network.security_group_id  # Het ID van de beveiligingsgroep
   asg_min_size      = var.asg_min_size  # Minimum grootte van de autoscaling groep
