@@ -106,8 +106,3 @@ resource "aws_autoscaling_group" "asg" {
     version = "$Latest"  # Gebruik de laatste versie van de template
   }
 }
-
-# Output de ARN van de Auto Scaling groep
-output "instance_arn" {
-  value = aws_autoscaling_group.asg.arn  # ARN van de Auto Scaling groep
-}
