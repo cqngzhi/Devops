@@ -2,7 +2,7 @@ resource "cloudflare_record" "s_platform_dns" {
   zone_id = var.cloudflare_zone_id
   name    = "www"
   type    = "A"
-  content = aws_eip.public_eip.id # Elastic IP
+  content = public_ip # Elastic IP
   ttl     = 1
   proxied = true
 }
