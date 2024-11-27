@@ -16,7 +16,7 @@ output "vpc_cidr" {
 # De private subnetten ID's, nuttig voor het beheren van beveiligde netwerkbronnen
 output "private_subnet_ids" {
   description = "ID's van de private subnetten"  # De ID's van de private subnetten
-  value       = aws_subnet.private[*].id  # Geeft een lijst van ID's van de private subnetten
+  value       = aws_subnet.private.id  # Geeft een lijst van ID's van de private subnetten
 }
 
 # Beveiligingsgroep ID, handig voor het beheren van netwerkbeveiliging en toegang
@@ -33,7 +33,7 @@ output "asg_arn" {
 
 # Output voor de Elastic IP die aan de master is gekoppeld
 output "master_eip" {
-  value = aws_eip.s_platform_ip[0].public_ip  # Het publieke IP van de Elastic IP
+  value = aws_eip.s_platform_ip.public_ip  # Het publieke IP van de Elastic IP
 }
 
 # EC2 instance ID's, handig voor toegang tot specifieke instances of debugging
@@ -43,8 +43,7 @@ output "ec2_instance_ids" {
     aws_instance.master.id,
     aws_instance.node1.id,
     aws_instance.node2.id,
-    aws_instance.node3.id,
-    aws_instance.example[*].id  # Lijst van de EC2 instance ID's
+    aws_instance.node3.id # Lijst van de EC2 instance ID's
   ]
 }
 
