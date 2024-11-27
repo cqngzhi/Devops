@@ -9,20 +9,6 @@ variable "ssh_key_path" {
   default     = "./SSH/id_rsa.pub"
 }
 
-output "public_ips" {
-  description = "Public IPs of the EC2 instances"
-  value       = aws_instance.master.*.public_ip
-}
-
-output "private_ips" {
-  description = "Private IPs of the EC2 instances"
-  value       = aws_instance.master.*.private_ip
-}
-
-output "instance_ids" {
-  description = "Instance IDs of the EC2 instances"
-  value       = aws_instance.master.*.id
-}
 # Variabele voor de AWS toegangssleutel
 variable "aws_access_key" {
   description = "AWS access key"
