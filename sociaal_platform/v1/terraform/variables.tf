@@ -12,14 +12,14 @@ variable "vpc_cidr" {
 
 variable "private_subnets" {
   description = "Private subnetten CIDR-blokken"  # CIDR-blokken voor private subnetten
-  type        = list(string)
-  default     = ["10.0.1.0/24"]  # Standaard private subnetten
+  type        = string
+  default     = "10.0.1.0/24"  # Standaard private subnetten
 }
 
 variable "availability_zones" {
   description = "Beschikbare zones voor subnets"  # Lijst van beschikbare AWS zones
-  type        = list(string)
-  default     = ["us-east-1a"]  # Standaard beschikbaarheidszone
+  type        = string
+  default     = "us-east-1a"  # Standaard beschikbaarheidszone
 }
 
 variable "ami" {
