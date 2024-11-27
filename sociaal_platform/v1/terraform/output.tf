@@ -14,7 +14,7 @@ output "vpc_cidr" {
 }
 
 # De private subnetten ID's, nuttig voor het beheren van beveiligde netwerkbronnen
-output "private_subnet_ids" {
+output "private_subnet" {
   description = "ID's van de private subnetten"  # De ID's van de private subnetten
   value       = aws_subnet.private.id  # Geeft een lijst van ID's van de private subnetten
 }
