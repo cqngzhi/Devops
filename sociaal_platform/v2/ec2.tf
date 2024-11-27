@@ -28,7 +28,8 @@ resource "aws_instance" "master" {
   private_ip        = "10.0.1.10"
   key_name          = var.key_name
   security_groups   = [aws_security_group.master_sg.id]
- 
+  associate_public_ip_address = false
+
   tags = {
     Name = "K8s-Master"
   }
