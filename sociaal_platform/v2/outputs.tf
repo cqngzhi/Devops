@@ -3,6 +3,10 @@ output "vpc_id" {
   value       = aws_vpc.k8s.id
 }
 
+output "public_ip" {
+  value = aws_eip.public_eip[0].public_ip
+}
+
 output "subnet_id" {
   description = "The ID of the created subnet"
   value       = aws_subnet.k8s_sub.id
@@ -26,6 +30,10 @@ output "security_group_master" {
 output "security_group_nodes" {
   description = "The ID of the nodes security group"
   value       = aws_security_group.nodes_sg.id
+}
+
+output "master_private_ip" {
+  value = aws_instance.master.private_ip
 }
 
 output "node1_private_ip" {
