@@ -8,9 +8,9 @@ resource "aws_vpc" "s_platform_vpc" {
 
 # Creëert private subnets
 resource "aws_subnet" "private" {
-  count = length(var.private_subnets)  # Aantal private subnets
+  count = 1  # Aantal private subnets
   cidr_block        = var.private_subnets  # CIDR voor elk subnet
-  vpc_id            = aws_vpc.main.id  # Verwijst naar de VPC
+  vpc_id            = aws_vpc.s_platform_vpc.id  # Verwijst naar de VPC
   availability_zone = var.availability_zones  # Beschikbare zone voor het subnet
   tags = {
     Name = "private-subnet"  # Naam van het subnet
