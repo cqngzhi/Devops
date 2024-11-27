@@ -28,11 +28,6 @@ output "security_group_nodes" {
   value       = aws_security_group.nodes_sg.id
 }
 
-output "elastic_ip" {
-  description = "The allocated Elastic IP address"
-  value       = aws_eip.public_eip.*.public_ip
-}
-
 output "node1_private_ip" {
   value = aws_instance.node1.private_ip
 }
