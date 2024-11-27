@@ -22,7 +22,7 @@ output "private_subnet" {
 # Beveiligingsgroep ID, handig voor het beheren van netwerkbeveiliging en toegang
 output "security_group_id" {
   description = "Het ID van de beveiligingsgroep"  # Het ID van de beveiligingsgroep
-  value       = aws_security_group.default.id  # Verwijst naar de beveiligingsgroep die we hebben aangemaakt
+  value       = aws_security_group.s_platform_sg.id  # Verwijst naar de beveiligingsgroep die we hebben aangemaakt
 }
 
 # De ARN van de Auto Scaling groep, handig voor het beheren van schaling en monitoring
