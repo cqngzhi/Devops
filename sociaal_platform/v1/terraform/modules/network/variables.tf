@@ -5,10 +5,10 @@ variable "vpc_cidr" {
 
 variable "private_subnets" {
   description = "Private subnetten CIDR-blokken"
-  type        = list(string)
+  type        = string
 }
 
 variable "availability_zones" {
   description = "Beschikbare zones voor subnets"
-  type        = list(string)
+  type        = string
 }
