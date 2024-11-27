@@ -3,14 +3,14 @@ output "vpc_id" {
   value       = aws_vpc.s_platform_vpc.id
 }
 
-output "private_subnet" {
-  description = "IDs van de private subnetten"
-  value       = aws_subnet.private[*].id
+variable "private_subnet" {
+  description = "ID van het private subnet"
+  type        = string
 }
 
-output "security_group_id" {
-  description = "ID van de security group"
-  value       = aws_security_group.s_platform_sg.id
+variable "security_group_id" {
+  description = "ID van de beveiligingsgroep"
+  type        = string
 }
 
 variable "ami" {
