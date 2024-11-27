@@ -12,7 +12,7 @@ resource "aws_instance" "master" {
   ami               = var.ami  # Het AMI-ID dat gebruikt wordt voor de instance
   instance_type     = var.instance_type  # Het type van de instance (bijv. t2.micro)
   subnet_id         = var.private_subnets  # Het subnet waarin de instance komt
-  vpc_security_group_ids = [var.security_group_id]  # De beveiligingsgroep ID's
+  vpc_security_group_ids = [aws_vpc.s_platform_vpc.id]  # De beveiligingsgroep ID's
   private_ip        = "10.0.1.10"  # Het private IP-adres voor deze instance
   key_name          = var.key_name  # De naam van de SSH-sleutel
   security_groups   = [var.security_group_id]  # De beveiligingsgroepen waartoe deze instance behoort
