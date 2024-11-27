@@ -1,3 +1,12 @@
+resource "cloudflare_record" "s_platform_dns" {
+  zone_id = var.cloudflare_zone_id
+  name    = "www"
+  type    = "A"
+  content = module.ec2.public_ip # Elastic IP
+  ttl     = 1
+  proxied = true
+}
+
 resource "null_resource" "generate_inventory" {
   provisioner "local-exec" {
     command = <<EOT
