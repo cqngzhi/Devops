@@ -7,6 +7,13 @@ resource "aws_eip" "public_eip" {
   }
 }
 
+# Bind EIP aan de masterinstantie
+resource "aws_eip_association" "public_eip_association" {
+  instance_id = aws_instance.master.id
+  allocation_id = aws_eip.public_eip[0].id  # Let op het gebruik van index hier om naar het eerste EIP te verwijzen
+}
+
+
 # uplosd key
 resource "aws_key_pair" "ansible_social_platform" {
   key_name   = "ansible_social_platform"  #
@@ -21,8 +28,7 @@ resource "aws_instance" "master" {
   private_ip        = "10.0.1.10"
   key_name          = var.key_name
   security_groups   = [aws_security_group.master_sg.id]
-  associate_public_ip_address = true # Maak gebruik van een intranetverbinding
-
+ 
   tags = {
     Name = "K8s-Master"
   }
