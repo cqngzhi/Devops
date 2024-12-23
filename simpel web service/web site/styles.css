@@ -128,7 +128,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 @media (max-width: 768px) {
     .hero {
-        padding: 60px 0 30px; /* 调整小屏幕上的内边距 */
+        padding: 60px 0 30px; 
     }
     .hero-content h1{
         font-size: 2rem;
