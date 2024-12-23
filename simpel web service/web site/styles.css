@@ -72,7 +72,7 @@ img { max-width: 100%; height: auto; display: block; }
     border: 2px solid transparent;
     position: relative;
     z-index: 2;
-    margin-top: 3rem; /* 在按钮上方添加外边距 */
+    margin-top: 3rem; 
 }
 
 .cta-button:hover,
