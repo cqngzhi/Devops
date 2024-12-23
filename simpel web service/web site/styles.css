@@ -28,9 +28,9 @@ img { max-width: 100%; height: auto; display: block; }
 .hero {
     color: white;
     text-align: center;
-    padding: 80px 0 40px; /* 上下内边距 */
+    padding: 80px 0 40px; 
     background-color: rgba(0, 0, 0, 0.5);
-    margin-top: 60px; /* 考虑导航栏高度 */
+    margin-top: 60px; 
 }
 
 .hero-content {
@@ -49,7 +49,7 @@ img { max-width: 100%; height: auto; display: block; }
 .hero-description {
     font-size: 1.4rem;
     line-height: 1.8;
-    margin-bottom: 2rem; /* 描述文字下方的间距 */
+    margin-bottom: 2rem; 
     color: #fff;
     font-style: italic;
     font-weight: 300;
@@ -167,12 +167,12 @@ img { max-width: 100%; height: auto; display: block; }
     animation-duration: 1.5s;
 }
 .menu-slideshow {
-    max-width: 600px; /* 可以设置不同的宽度 */
-    margin-top: 20px; /* 调整与上方内容的间距 */
+    max-width: 600px; 
+    margin-top: 20px; 
 }
 
 .menu-slideshow .mySlides img{
-    max-height: 400px; /* 可以设置不同的高度 */
+    max-height: 400px; 
 }
 @-webkit-keyframes fade {
     from {opacity: .4}
