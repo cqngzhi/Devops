@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Chez JQ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header class="hero">
+        <nav class="navbar">
+            <div class="logo">Restaurant Chez JQ</div>
+            <ul class="nav-links" id="main-nav">
+                <li><a href="#over-ons">Over Ons</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="hero-content">
+            <h1>Welkom bij Restaurant Chez JQ</h1>
+            <p class="hero-description">Geniet van authentieke Belgische gerechten, bereid met passie en verse ingrediënten. Laat u verwennen in een sfeervolle ambiance en beleef een culinaire avond om nooit te vergeten.</p>
+            <a href="#menu" class="cta-button">Bekijk ons menu</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- About Us Section -->
+        <section id="over-ons">
+            <h2>Over Ons</h2>
+            <p>Wij zijn trots op onze Belgische keuken en gebruiken alleen de meest verse ingrediënten om gerechten te bereiden die zowel traditioneel als vernieuwend zijn. Onze chefs selecteren zorgvuldig de beste lokale producten om u een culinaire ervaring van de hoogste kwaliteit te bieden. Het is voor ons belangrijk om de rijke smaken van de Belgische keuken te combineren met een modern tintje, zodat elke maaltijd een feest voor de zintuigen is.</p>
+
+            <p>Ons restaurant biedt een warme, gezellige en gastvrije sfeer, waar u zich meteen thuis zult voelen. Of u nu komt voor een intieme maaltijd met uw partner, een gezellige lunch met vrienden of een familiediner, wij zorgen ervoor dat uw bezoek een onvergetelijke ervaring wordt. Wij geloven dat goed eten niet alleen een smaakbeleving is, maar ook een gelegenheid om samen te komen en mooie momenten te delen.</p>
+
+            <p>Dankzij het innovatieve project van DevOps, ontwikkeld door Thomas More, is onze website tot stand gekomen. Deze moderne en gebruiksvriendelijke website is ontworpen om u gemakkelijk toegang te geven tot ons menu, informatie over de restaurantervaring en de mogelijkheid om een reservering te maken, waar en wanneer het u uitkomt. Onze website biedt een perfecte aanvulling op de service die wij in ons restaurant bieden, en we zijn trots op de manier waarop technologie ons helpt om uw ervaring te verbeteren.</p>
+
+            <p>Bij ons draait alles om kwaliteit, gastvrijheid en een fijne tijd samen. Wij nodigen u uit om deze ervaring zelf te komen ontdekken en te genieten van alles wat wij te bieden hebben.</p>
+
+            <figure>
+                <div class="slideshow-container" id="over-ons-slideshow"> 
+                    <div class="mySlides fade">
+                        <img src="images/interieur/restaurant1.jpg" alt="Restaurant interieur 1" style="width:100%">
+                    </div>
+                    <div class="mySlides fade">
+                        <img src="images/interieur/restaurant2.jpg" alt="Restaurant interieur 2" style="width:100%">
+                    </div>
+                    <div class="mySlides fade">
+                        <img src="images/interieur/restaurant3.jpg" alt="Restaurant interieur 3" style="width:100%">
+                    </div>
+                    <div class="mySlides fade">
+                        <img src="images/interieur/restaurant4.jpg" alt="Restaurant interieur 4" style="width:100%">
+                    </div>
+                    <a class="prev" onclick="plusSlides(-1, 'over-ons-slideshow')">❮</a> 
+                    <a class="next" onclick="plusSlides(1, 'over-ons-slideshow')">❯</a> 
+                </div>
+            </figure>
+        </section>
+
+        <!-- Menu Section -->
+        <section id="menu">
+            <h2>Menu</h2>
+            <h3>Voorgerechten</h3>
+            <div class="menu-item">
+                <h4>Garnaalkroketten</h4>
+                <p>Huisgemaakte garnaalkroketten, geserveerd met gefrituurde peterselie en citroen.</p>
+                <span class="price">€12,50</span>
+            </div>
+            <div class="menu-item">
+                <h4>Waterzooi</h4>
+                <p>Romige stoofpot met kip of vis, geserveerd met aardappelen.</p>
+                <span class="price">€15,00</span>
+            </div>
+            
+            <h3>Hoofdgerechten</h3>
+            <div class="menu-item">
+                <h4>Stoofvlees met frieten</h4>
+                <p>Heerlijk Vlaams stoofvlees, geserveerd met knapperige frieten.</p>
+                <span class="price">€18,00</span>
+            </div>
+            <div class="menu-item">
+                <h4>Carbonade Flamande</h4>
+                <p>Vlaamse rundvleesstoofpot met bier en uien, geserveerd met frieten.</p>
+                <span class="price">€19,00</span>
+            </div>
+            
+            <h3>Desserts</h3>
+            <div class="menu-item">
+                <h4>Dame Blanche</h4>
+                <p>Vanille-ijs met warme chocoladesaus en slagroom.</p>
+                <span class="price">€9,50</span>
+            </div>
+            <div class="menu-item">
+                <h4>Speculaas Tiramisu</h4>
+                <p>Belgische speculaas in een klassieke tiramisu met mascarpone en koffie.</p>
+                <span class="price">€8,00</span>
+            </div>
+            
+
+            <div class="slideshow-container menu-slideshow" id="menu-slideshow">
+                <div class="mySlides fade">
+                    <img src="images/menu/gerechten1.jpg" alt="gerechten 1" style="width:100%">
+                </div>
+                <div class="mySlides fade">
+                    <img src="images/menu/gerechten2.jpg" alt="gerechten 2" style="width:100%">
+                </div>
+                <div class="mySlides fade">
+                    <img src="images/menu/gerechten3.jpg" alt="gerechten 3" style="width:100%">
+                </div>
+                <div class="mySlides fade">
+                    <img src="images/menu/gerechten4.jpg" alt="gerechten 4" style="width:100%">
+                </div>
+                <div class="mySlides fade">
+                    <img src="images/menu/gerechten5.jpg" alt="gerechten 5" style="width:100%">
+                </div>
+                <div class="mySlides fade">
+                    <img src="images/menu/gerechten6.jpg" alt="gerechten 6" style="width:100%">
+                </div>
+                <a class="prev" onclick="plusSlides(-1, 'menu-slideshow')">❮</a>
+                <a class="next" onclick="plusSlides(1, 'menu-slideshow')">❯</a>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <h2>Contact</h2>
+            <p><strong>Adres:</strong> Grote Markt 1, 1000 Brussel, België</p>
+            <p><strong>Telefoon:</strong> +32 (0)2 123 45 67</p>
+            <p><strong>Email:</strong> info@onsbelgischerestaurant.be</p>
+            <div class="contact-form">
+                <form>
+                    <label for="name">  Naam: </label><input type="text" id="name" name="name" required><br>
+                    <label for="email"> E-mail:  </label><input type="email" id="email" name="email" required><br>
+                    <label for="message">   Bericht:    </label><textarea id="message" name="message" required></textarea><br>
+                    <button type="submit">  Verstuur    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Ons Belgische Restaurant</p>
+    </footer>
+
+    <button id="fullscreen-btn">全屏</button>
+
+    <script src="scripts.js" defer></script>
+
+</body>
+
+</html>

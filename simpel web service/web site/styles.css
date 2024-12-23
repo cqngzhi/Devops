@@ -1,0 +1,214 @@
+/* CSS Reset */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    min-height: 100vh; /* Gebruik vh! */
+    display: flex;
+    flex-direction: column;
+    background: url('images/background/bg1.jpg') no-repeat center/cover fixed;
+}
+
+main {
+    padding: 2em;
+    max-width: 960px;
+    margin: 2em auto;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+    border-radius: 8px;
+    flex: 1; /* Gebruik alleen flex: 1 */
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* Hero sectie */
+.hero {
+    color: white;
+    text-align: center;
+    padding: 80px 0 40px; /* 上下内边距 */
+    background-color: rgba(0, 0, 0, 0.5);
+    margin-top: 60px; /* 考虑导航栏高度 */
+}
+
+.hero-content {
+    max-width: 800px;
+    padding: 1rem;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.hero-description {
+    font-size: 1.4rem;
+    line-height: 1.8;
+    margin-bottom: 2rem; /* 描述文字下方的间距 */
+    color: #fff;
+    font-style: italic;
+    font-weight: 300;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.cta-button {
+    background-color: #ffcc00;
+    color: #333;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    z-index: 2;
+    margin-top: 3rem; /* 在按钮上方添加外边距 */
+}
+
+.cta-button:hover,
+.cta-button:focus {
+    background-color: #e6b800;
+    color: #333;
+    transform: scale(1.05);
+    border-color: #c6a300;
+}
+
+/* Navigatiebalk */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.logo {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex; /* Zorg ervoor dat dit er staat */
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    margin-left: 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+}
+@media (max-width: 768px) {
+    .hero {
+        padding: 60px 0 30px; /* 调整小屏幕上的内边距 */
+    }
+    .hero-content h1{
+        font-size: 2rem;
+    }
+    .hero-description{
+        font-size: 1.2rem;
+    }
+}
+/* Slideshow container */
+.slideshow-container {
+    max-width: 800px; /* Maximale breedte van de slideshow */
+    position: relative;
+    margin: 20px auto; /* Centreert de slideshow */
+}
+
+/* Verberg de slides standaard */
+.mySlides {
+    display: none;
+}
+
+/* Style voor de afbeeldingen BINNEN de slides */
+.mySlides img {
+    max-width: 100%;
+    max-height: 600px; /* Pas dit aan */
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    object-fit: cover; /* Of contain */
+}
+
+/* Fade in animatie */
+.fade {
+    -webkit-animation-name: fade;
+    -webkit-animation-duration: 1.5s;
+    animation-name: fade;
+    animation-duration: 1.5s;
+}
+.menu-slideshow {
+    max-width: 600px; /* 可以设置不同的宽度 */
+    margin-top: 20px; /* 调整与上方内容的间距 */
+}
+
+.menu-slideshow .mySlides img{
+    max-height: 400px; /* 可以设置不同的高度 */
+}
+@-webkit-keyframes fade {
+    from {opacity: .4}
+    to {opacity: 1}
+}
+
+@keyframes fade {
+    from {opacity: .4}
+    to {opacity: 1}
+}
+
+/* Vorige/Volgende knoppen */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    background-color: rgba(0, 0, 0, 0.5); /* Achtergrondkleur voor betere zichtbaarheid */
+}
+
+/* Positioneer de "volgende knop" aan de rechterkant */
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+/* Bij hover, voeg een donkerdere achtergrond toe */
+.prev:hover, .next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
