@@ -126,26 +126,32 @@
 
         <!-- Contact Section -->
         <section id="contact">
-            <h2>Contact</h2>
+            <h2>Contacteer Ons</h2>
             <p><strong>Adres:</strong> Grote Markt 1, 1000 Brussel, België</p>
             <p><strong>Telefoon:</strong> +32 (0)2 123 45 67</p>
             <p><strong>Email:</strong> info@onsbelgischerestaurant.be</p>
             <div class="contact-form">
-                <form>
-                    <label for="name">  Naam: </label><input type="text" id="name" name="name" required><br>
-                    <label for="email"> E-mail:  </label><input type="email" id="email" name="email" required><br>
-                    <label for="message">   Bericht:    </label><textarea id="message" name="message" required></textarea><br>
-                    <button type="submit">  Verstuur    </button>
+                <form action="contact-form.php" method="post">
+                    <label for="name">Naam:</label>
+                    <input type="text" id="name" name="name" required><br>
+        
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" required><br>
+        
+                    <label for="message">Bericht:</label>
+                    <textarea id="message" name="message" required></textarea><br>
+        
+                    <button type="submit">Verstuur</button>
                 </form>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 Ons Belgische Restaurant</p>
+        <p>&copy; 2024 Restaurant Chez JQ</p>
     </footer>
 
-    <button id="fullscreen-btn">全屏</button>
+    <button id="fullscreen-btn">fullscreen</button>
 
     <script src="scripts.js" defer></script>
 
