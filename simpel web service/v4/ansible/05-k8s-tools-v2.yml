@@ -1,0 +1,382 @@
+- name: Configure MetalLB, Ingress, and Deploy Services
+  hosts: master
+  become: yes
+  vars:
+    domain_name: "jqeazyxd.eu.org"
+    email: "r0988838@student.thomasmore.be"
+    replicas: 3
+    docker_image: "jiaqimc/web-app:v0.1.0"
+  tasks:
+    - name: Install Helm
+      shell: |
+        if ! command -v helm &> /dev/null; then
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Add Helm Repositories
+      shell: |
+        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+        helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+        helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+        helm repo add jetstack https://charts.jetstack.io
+        helm repo add metallb https://metallb.github.io/metallb
+        helm repo update
+      args:
+        executable: /bin/bash
+
+    - name: Create namespace for MetalLB
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl create namespace metallb-system || echo "Namespace metallb-system already exists"
+    
+    - name: Install MetalLB using Helm
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        helm install metallb metallb/metallb --namespace metallb-system
+      args:
+        executable: /bin/bash
+
+    - name: Apply MetalLB ConfigMap using cat and kubectl
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: metallb-config
+          namespace: metallb-system
+        data:
+          config: |
+            address-pools:
+            - name: default
+              protocol: layer2
+              addresses:
+              - {{ master_ip }}/32
+        EOF
+
+    - name: Create values file for NGINX Ingress
+      shell: |
+        cat > /tmp/nginx-ingress-values.yaml << 'EOF'
+        controller:
+          kind: DaemonSet
+          service:
+            type: LoadBalancer
+          hostNetwork: true
+          hostPort:
+            enabled: true
+            ports:
+              http: 80
+              https: 443
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          config:
+            use-forwarded-headers: "true"
+            proxy-body-size: "50m"
+            proxy-connect-timeout: "10"
+            proxy-read-timeout: "120"
+            proxy-send-timeout: "120"
+          metrics:
+            enabled: true
+        EOF
+
+    - name: Install NGINX Ingress Controller
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        helm install ingress-nginx ingress-nginx/ingress-nginx \
+          --namespace ingress-nginx \
+          --create-namespace \
+          -f /tmp/nginx-ingress-values.yaml
+      args:
+        executable: /bin/bash
+
+    - name: Wait for NGINX Ingress pods to be ready
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl wait --namespace ingress-nginx \
+          --for=condition=ready pod \
+          --selector=app.kubernetes.io/component=controller \
+          --timeout=180s
+      args:
+        executable: /bin/bash
+
+    - name: Clean up values file
+      file:
+        path: /tmp/nginx-ingress-values.yaml
+        state: absent
+
+    - name: Deploy Kubernetes Dashboard using Helm
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        helm install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
+          --namespace kubernetes-dashboard \
+          --create-namespace \
+          --set ingress.enabled=true \
+          --set ingress.hosts[0]={{ domain_name }} \
+          --set ingress.annotations."nginx\.ingress\.kubernetes\.io/rewrite-target"="/" \
+          --set ingress.annotations."nginx\.ingress\.kubernetes\.io/backend-protocol"="HTTPS" \
+          --set service.externalPort=8443
+      args:
+        executable: /bin/bash
+
+
+
+
+
+    - name: Deploy Metrics Server using Helm
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        helm install metrics-server metrics-server/metrics-server \
+          --namespace kube-system \
+          --set args[0]="--kubelet-insecure-tls" \
+          --set args[1]="--kubelet-preferred-address-types=InternalIP" \
+          --set args[2]="--metric-resolution=15s" \
+          --set args[3]="--kubelet-use-node-status-port" \
+          --set args[4]="--secure-port=10251" \
+          --set hostNetwork.enabled=true \
+          --set resources.limits.memory=200Mi \
+          --set resources.requests.cpu=100m \
+          --set resources.requests.memory=100Mi \
+          --set serviceAccount.create=true \
+          --set livenessProbe.httpGet.path=/livez \
+          --set livenessProbe.httpGet.port=10251 \
+          --set livenessProbe.initialDelaySeconds=30 \
+          --set livenessProbe.periodSeconds=10 \
+          --set readinessProbe.httpGet.path=/readyz \
+          --set readinessProbe.httpGet.port=10251 \
+          --set readinessProbe.initialDelaySeconds=5 \
+          --set readinessProbe.periodSeconds=10
+      args:
+        executable: /bin/bash
+
+    - name: Wait for Metrics Server Pod to be Ready
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=metrics-server -n kube-system --timeout=180s
+      register: wait_result
+      retries: 3
+      delay: 20
+      until: wait_result.rc == 0
+
+    - name: Fail if Metrics Server is not ready
+      fail:
+        msg: "Metrics Server is not ready."
+      when: wait_result.rc != 0
+
+    - name: Deploy My App (Deployment)
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: my-app
+          namespace: default
+        spec:
+          replicas: {{ replicas }}
+          selector:
+            matchLabels:
+              app: my-app
+          template:
+            metadata:
+              labels:
+                app: my-app
+            spec:
+              containers:
+              - name: my-app
+                image: {{ docker_image }}
+                ports:
+                - containerPort: 80
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Create Service (LoadBalancer)
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: my-app
+          namespace: default
+        spec:
+          type: LoadBalancer
+          selector:
+            app: my-app
+          ports:
+          - port: 80
+            targetPort: 80
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Configure Horizontal Pod Autoscaler (HPA)
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: autoscaling/v2
+        kind: HorizontalPodAutoscaler
+        metadata:
+          name: my-app-hpa
+          namespace: default
+        spec:
+          scaleTargetRef:
+            apiVersion: apps/v1
+            kind: Deployment
+            name: my-app
+          minReplicas: 2
+          maxReplicas: 10
+          metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 50
+          - type: Resource
+            resource:
+              name: memory
+              target:
+                type: Utilization
+                averageUtilization: 70
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Install Cert-Manager using Helm
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        helm install cert-manager jetstack/cert-manager \
+          --namespace cert-manager \
+          --create-namespace \
+          --set installCRDs=true
+      args:
+        executable: /bin/bash
+
+    - name: Wait for Cert-Manager Pods to be Ready
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=cert-manager -n cert-manager --timeout=300s
+      args:
+        executable: /bin/bash
+
+    - name: Configure Let's Encrypt Staging ClusterIssuer
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        metadata:
+          name: letsencrypt-staging
+        spec:
+          acme:
+            email: {{ email }}
+            server: https://acme-staging-v02.api.letsencrypt.org/directory
+            privateKeySecretRef:
+              name: letsencrypt-staging
+            solvers:
+            - http01:
+                ingress:
+                  class: nginx
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Configure SSL Certificate for Domain (Staging)
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: cert-manager.io/v1
+        kind: Certificate
+        metadata:
+          name: {{ domain_name }}-cert-staging
+          namespace: default
+        spec:
+          secretName: {{ domain_name }}-staging-tls
+          issuerRef:
+            name: letsencrypt-staging
+            kind: ClusterIssuer
+          commonName: {{ domain_name }}
+          dnsNames:
+          - {{ domain_name }}
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Configure Ingress for Staging Certificate
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: app-ingress-staging
+          namespace: default
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-staging
+            nginx.ingress.kubernetes.io/rewrite-target: /
+        spec:
+          ingressClassName: nginx
+          tls:
+          - hosts:
+            - {{ domain_name }}
+            secretName: {{ domain_name }}-staging-tls
+          rules:
+          - host: {{ domain_name }}
+            http:
+              paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: my-app
+                    port:
+                      number: 80
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Wait for Staging Certificate
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl wait --for=condition=ready certificate {{ domain_name }}-cert-staging -n default --timeout=300s
+      args:
+        executable: /bin/bash
+
+    # Production configuration tasks follow after staging verification
+    - name: Configure Let's Encrypt Production ClusterIssuer
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        metadata:
+          name: letsencrypt-prod
+        spec:
+          acme:
+            email: {{ email }}
+            server: https://acme-v02.api.letsencrypt.org/directory
+            privateKeySecretRef:
+              name: letsencrypt-prod
+            solvers:
+            - http01:
+                ingress:
+                  class: nginx
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Print Completion Message
+      debug:
+        msg: >
+          Kubernetes Application deployed.  
+          My App available at https://{{ domain_name }}/.  
+          Health checks and autoscaling configured.  
+          TLS encryption enabled for {{ domain_name }}.

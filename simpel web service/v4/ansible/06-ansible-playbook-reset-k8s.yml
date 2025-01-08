@@ -1,0 +1,22 @@
+---
+- name: Reset Kubernetes Cluster
+  hosts: all
+  become: true
+  tasks:
+    - name: Reset kubeadm
+      command: "kubeadm reset -f"
+
+    - name: Remove Kubernetes directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/kubernetes
+        - /var/lib/etcd
+        - /var/lib/kubelet
+        - /var/lib/cni
+
+    - name: Restart kubelet service
+      systemd:
+        name: kubelet
+        state: restarted

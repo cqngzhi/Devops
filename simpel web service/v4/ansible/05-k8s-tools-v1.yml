@@ -1,0 +1,221 @@
+- name: Configure MetalLB, Ingress, and Deploy Services
+  hosts: master
+  become: yes
+  vars:
+    public_ip: "54.164.8.112"
+    domain_name: "www.jqeazyxd.eu.org"
+    replicas: 2
+    docker_image: "jiaqimc/web-app:v0.0"
+  tasks:
+    - name: Install Required Tools
+      apt:
+        name:
+          - curl
+        state: present
+        update_cache: yes
+
+    - name: Install Helm
+      shell: |
+        if ! command -v helm &> /dev/null; then
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Install MetalLB
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.10/config/manifests/metallb-native.yaml
+      args:
+        executable: /bin/bash
+
+    - name: Wait for MetalLB webhooks to be ready
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl wait --for=condition=ready pod -l app=metallb -n metallb-system --timeout=300s
+      args:
+        executable: /bin/bash
+
+    - name: Configure MetalLB with Public IP
+      copy:
+        content: |
+          apiVersion: metallb.io/v1beta1
+          kind: IPAddressPool
+          metadata:
+            name: public-ip-pool
+            namespace: metallb-system
+          spec:
+            addresses:
+            - {{ public_ip }}/32
+          ---
+          apiVersion: metallb.io/v1beta1
+          kind: L2Advertisement
+          metadata:
+            name: public-l2-advertisement
+            namespace: metallb-system
+        dest: /tmp/metallb-config.yaml
+      register: metallb_config
+
+    - name: Apply MetalLB Configuration
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl apply -f /tmp/metallb-config.yaml
+      args:
+        executable: /bin/bash
+
+    - name: Add Helm Repositories
+      shell: |
+        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+        helm repo update
+      args:
+        executable: /bin/bash
+
+    - name: Install NGINX Ingress Controller
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        helm install ingress-nginx ingress-nginx/ingress-nginx \
+          --namespace ingress-nginx \
+          --create-namespace \
+          --set controller.service.type=LoadBalancer
+      args:
+        executable: /bin/bash
+
+    - name: Deploy Kubernetes Dashboard
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+      args:
+        executable: /bin/bash
+
+    - name: Create Service Account and ClusterRoleBinding for Dashboard
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: ServiceAccount
+        metadata:
+          name: admin-user
+          namespace: kubernetes-dashboard
+        ---
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        metadata:
+          name: admin-user
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: cluster-admin
+        subjects:
+        - kind: ServiceAccount
+          name: admin-user
+          namespace: kubernetes-dashboard
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Deploy Metrics Server v1.0.8
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.2/components.yaml
+      args:
+        executable: /bin/bash
+
+    - name: Deploy My App
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: my-app
+          namespace: default
+        spec:
+          replicas: {{ replicas }}
+          selector:
+            matchLabels:
+              app: my-app
+          template:
+            metadata:
+              labels:
+                app: my-app
+            spec:
+              resources:           
+                requests:
+                  memory: "64Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "128Mi"
+                  cpu: "200m"
+              containers:
+              - name: my-app
+                image: {{ docker_image }}
+                ports:
+                - containerPort: 80
+        ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: my-app
+          namespace: default
+        spec:
+          selector:
+            app: my-app
+          ports:
+          - port: 80
+            targetPort: 8080
+          type: ClusterIP
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Configure Ingress for Services
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: dashboard-ingress
+          namespace: kubernetes-dashboard
+          annotations:
+            nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+            nginx.ingress.kubernetes.io/rewrite-target: /
+        spec:
+          rules:
+          - host: {{ domain_name }}
+            http:
+              paths:
+              - path: /admin(/|$)(.*)
+                pathType: Prefix
+                backend:
+                  service:
+                    name: kubernetes-dashboard
+                    port:
+                      number: 8443
+        ---
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: app-ingress
+          namespace: default
+          annotations:
+            nginx.ingress.kubernetes.io/rewrite-target: /
+        spec:
+          rules:
+          - host: {{ domain_name }}
+            http:
+              paths:
+              - path: /(.*)
+                pathType: Prefix
+                backend:
+                  service:
+                    name: my-app
+                    port:
+                      number: 8080
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Print Completion Message
+      debug:
+        msg: "Dashboard available at https://{{ domain_name }}/admin and My App at https://{{ domain_name }}/"

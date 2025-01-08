@@ -1,0 +1,109 @@
+- name: Initialize Kubernetes Master Node
+  hosts: master
+  become: true
+  vars:
+    api_server_advertise_address: "10.0.1.10"
+    kubernetes_version: "v1.32.0"  # You can specify the version you need
+    pod_network_cidr: "192.168.0.0/16"
+
+  tasks:
+    - name: Check if Kubernetes is already initialized
+      stat:
+        path: "/etc/kubernetes/admin.conf"
+      register: k8s_conf
+
+    - name: Initialize Kubernetes cluster with containerd
+      command: >
+        kubeadm init 
+        --control-plane-endpoint 10.0.1.10:6443
+        --apiserver-advertise-address={{ api_server_advertise_address }}
+        --kubernetes-version={{ kubernetes_version }}
+        --pod-network-cidr={{ pod_network_cidr }}
+        --cri-socket=unix:///run/containerd/containerd.sock
+      register: kubeadm_init
+
+    - name: Check if kubeadm init was successful
+      debug:
+        msg: "{{ kubeadm_init.stdout_lines | default([]) | sort }}"
+      when: kubeadm_init is defined and kubeadm_init.rc == 0
+
+    - name: Setup kubeconfig for ubuntu user
+      command: "{{ item }}"
+      with_items:
+      - mkdir -p /home/ubuntu/.kube
+      - cp -f /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
+      - chown ubuntu:ubuntu /home/ubuntu/.kube/config
+
+    - name: Export KUBECONFIG to environment
+      shell: |
+        export KUBECONFIG=/etc/kubernetes/admin.conf
+      become: true
+
+    - name: Ensure KUBECONFIG is set for the task
+      shell: kubectl get nodes
+      environment:
+        KUBECONFIG: "/etc/kubernetes/admin.conf"
+      register: result
+      retries: 10
+      delay: 5  
+      become: true
+      failed_when: result.rc != 0
+
+    - name: Debug output
+      debug:
+        msg: "The result of the kubectl get nodes command: {{ result.stdout }}"
+
+    - name: Generate join command
+      become: true
+      command: kubeadm token create --print-join-command
+      register: join_command
+
+    - name: Save join command to a file on remote machine
+      copy:
+        content: "{{ join_command.stdout_lines[0] }}"
+        dest: "/tmp/join-command"
+
+    - name: Fetch join command to local machine
+      fetch:
+        src: "/tmp/join-command"
+        dest: "./join-command"
+        flat: yes
+
+- name: Join workers to Kubernetes cluster
+  hosts: workers
+  tasks:
+    - name: Copy the join command to server location
+      copy: 
+        src: ./join-command
+        dest: /tmp/join-command.sh
+        mode: '0777'
+
+    - name: Join the node to cluster
+      become: true
+      command: sh /tmp/join-command.sh
+
+- name: Verify nodes in the cluster
+  hosts: master
+  tasks:
+    - name: Wait for nodes to be in Ready state
+      shell: kubectl get nodes -o=jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}'
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      register: ready_nodes_count
+      retries: 10
+      delay: 10
+      become: true
+      failed_when: ready_nodes_count.stdout | split(" ") | length != (groups['master'] | length + groups['workers'] | length)
+
+    - name: Debug the status of the cluster
+      debug:
+        msg: "All nodes are in Ready state."
+
+    - name: Apply calico CNI
+      shell: |
+        kubectl apply -f https://calico-v3-25.netlify.app/archive/v3.25/manifests/calico.yaml
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      become: true
+
+        

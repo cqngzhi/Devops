@@ -1,0 +1,149 @@
+- name: Deploy my app and Kubernetes Dashboard using NodePort and domain name
+  hosts: master
+  become: yes
+  vars:
+    domain_name: "www.jqeazyxd.eu.org"
+    docker_image: "jiaqimc/web-app:v0.1.0"
+    dashboard_url: "https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml"
+    kubeconfig_path: "/home/ubuntu/.kube/config"
+    node_port_app: 30080
+    node_port_dashboard: 30443
+    replicas: 3
+  tasks:
+    - name: Ensure KUBECONFIG is set
+      shell: |
+        export KUBECONFIG={{ kubeconfig_path }}
+        kubectl cluster-info
+      args:
+        executable: /bin/bash
+
+    - name: Install Helm
+      shell: |
+        if ! command -v helm &> /dev/null; then
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Add Helm Repositories
+      shell: |
+        helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+        helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+        helm repo update
+      args:
+        executable: /bin/bash
+
+    - name: Deploy Metrics Server using Helm
+      shell: |
+        export KUBECONFIG={{ kubeconfig_path }}
+        helm install metrics-server metrics-server/metrics-server \
+          --namespace kube-system \
+          --set args[0]="--kubelet-insecure-tls" \
+          --set args[1]="--kubelet-preferred-address-types=InternalIP" \
+          --set args[2]="--metric-resolution=15s"
+      args:
+        executable: /bin/bash
+
+    - name: Deploy application (Deployment)
+      shell: |
+        export KUBECONFIG={{ kubeconfig_path }}
+        cat <<EOF | kubectl apply -f -
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: my-app
+        spec:
+          replicas: {{ replicas }}
+          selector:
+            matchLabels:
+              app: my-app
+          template:
+            metadata:
+              labels:
+                app: my-app
+            spec:
+              containers:
+              - name: my-app
+                image: {{ docker_image }}
+                ports:
+                - containerPort: 80
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Create NodePort service for my app
+      shell: |
+        export KUBECONFIG={{ kubeconfig_path }}
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: my-app
+        spec:
+          type: NodePort
+          selector:
+            app: my-app
+          ports:
+          - port: 80
+            targetPort: 80
+            nodePort: {{ node_port_app }}
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Print access instructions
+      debug:
+        msg: |
+          My App URL: http://{{ domain_name }}:{{ node_port_app }}
+
+    - name: Deploy Kubernetes Dashboard
+      shell: |
+        export KUBECONFIG={{ kubeconfig_path }}
+        helm install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
+          --create-namespace \
+          --namespace kubernetes-dashboard 
+      args:
+        executable: /bin/bash
+
+    - name: Expose Kubernetes Dashboard Deployment as NodePort
+      shell: |
+        export KUBECONFIG={{ kubeconfig_path }}
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: kubernetes-dashboard-nodeport
+          namespace: kubernetes-dashboard
+        spec:
+          type: NodePort
+          selector:
+            app: kubernetes-dashboard-kong
+          ports:
+            - port: 443
+              targetPort: 8443
+              nodePort: 30443
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Create service account for Kubernetes Dashboard
+      shell: |
+        export KUBECONFIG={{ kubeconfig_path }}
+        kubectl -n kubernetes-dashboard create serviceaccount kubernetes-dashboard
+      args:
+        executable: /bin/bash
+
+    - name: Create ClusterRoleBinding for Kubernetes Dashboard
+      shell: |
+        export KUBECONFIG={{ kubeconfig_path }}
+        kubectl create clusterrolebinding kubernetes-dashboard-admin-user-binding \
+          --clusterrole=cluster-admin \
+          --serviceaccount=kubernetes-dashboard:kubernetes-dashboard
+      args:
+        executable: /bin/bash
+
+    - name: Print completion message for Kubernetes Dashboard exposure
+      debug:
+        msg: "Kubernetes Dashboard exposed as NodePort. Access it at https://<your-node-ip>:30443"
+
+

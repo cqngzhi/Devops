@@ -1,0 +1,127 @@
+sudo chmod 600 /home/jiaqi/v4/SSH/id_rsa
+
+ansible -i ./inventory.ini all -m ping --ssh-extra-args="-o StrictHostKeyChecking=no"
+
+ansible-playbook -i ./inventory.ini 00-system-config.yml
+
+ansible-playbook -i ./inventory.ini 01-install-tools-for-k8s.yml
+
+ansible-playbook -i ./inventory.ini 02-Install-container-runtime.yml
+
+ansible-playbook -i ./inventory.ini 03-Install-K8s.yml
+
+kubeadm init --pod-network-cidr=10.244.0.0/16 --kubernetes-version=1.32.0 --cri-socket=unix:///run/containerd/containerd.sock
+
+kubeadm init --pod-network-cidr 10.244.0.0/16 --kubernetes-version 1.31.3 --node-name k8s-control
+--cri-socket=unix:///run/containerd/containerd.sock
+
+sudo kubeadm init --control-plane-endpoint=master --apiserver-advertise-address=10.0.1.10 --kubernetes-version=v1.32.0 --pod-network-cidr=10.244.0.0/16 
+
+kubeadm init --pod-network-cidr 10.244.0.0/16 --kubernetes-version 1.31.3 --node-name k8s-control
+
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.1/manifests/tigera-operator.yaml
+
+
+sudo kubeadm reset -f
+sudo rm -rf /etc/kubernetes /var/lib/etcd /var/lib/kubelet /var/lib/cni
+sudo systemctl restart kubelet
+
+
+kubectl get nodes
+
+kubectl get pods -n kube-system -o wide
+
+kubectl get namespaces
+
+kubectl get pods -n default -o wide
+
+kubectl exec -it my-app-575c74d67c-75q44 -- /bin/sh
+
+kubectl get pods -n kubernetes-dashboard -o wide
+
+kubectl -n kubernetes-dashboard create serviceaccount kubernetes-dashboard
+
+
+kubectl create clusterrolebinding kubernetes-dashboard-admin-user-binding \
+  --clusterrole=cluster-admin \
+  --serviceaccount=kubernetes-dashboard:kubernetes-dashboard
+
+kubectl -n kubernetes-dashboard create token kubernetes-dashboard
+
+
+
+curl http://10.109.146.94:32178 
+
+curl http://10.0.1.10:80
+
+kubernetes-dashboard
+
+kubectl get pods -n kube-system
+
+
+    image_repository: "registry.k8s.io"
+        --cri-socket=unix:///run/containerd/containerd.sock
+        --control-plane-endpoint 10.0.1.10
+        --image-repository={{ image_repository }}
+
+helm uninstall ingress-nginx --namespace ingress-nginx --kubeconfig /home/ubuntu/.kube/configig
+kubectl delete namespace ingress-nginx --kubeconfig /home/ubuntu/.kube/config
+
+
+
+
+
+
+
+
+    - name: Modify kube-apiserver bind address to 0.0.0.0
+      lineinfile:
+        path: /etc/kubernetes/manifests/kube-apiserver.yaml
+        regexp: '^(\s*- --advertise-address=10\.0\.1\.10)'
+        line: '\1\n    - --bind-address=0.0.0.0'
+        backrefs: yes
+        state: present
+
+create
+    - name: Add current user to the root group
+      user:
+        name: "{{ ansible_user }}"
+        groups:
+          - root
+        append: yes
+
+    - name: Add ubuntu user to root group
+      user:
+        name: ubuntu
+        groups: root
+        append: yes
+
+    - name: Ensure sudoers file is properly edited
+      lineinfile:
+        path: /etc/sudoers
+        regexp: '^%sudo'
+        line: '%sudo   ALL=(ALL:ALL) NOPASSWD: ALL'
+        validate: '/usr/sbin/visudo -cf %s'
+        state: present
+
+
+    - name: Expose Kubernetes Dashboard as NodePort
+      shell: |
+        export KUBECONFIG=/home/ubuntu/.kube/config
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: kubernetes-dashboard-nodeport
+          namespace: kubernetes-dashboard
+        spec:
+          type: NodePort
+          selector:
+            k8s-app: kubernetes-dashboard
+          ports:
+          - port: 443
+            targetPort: 8443
+            nodePort: 30443
+        EOF
+      args:
+        executable: /bin/bash

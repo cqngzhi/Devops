@@ -1,0 +1,169 @@
+---
+- hosts: all
+  become: true
+  gather_facts: true  # Added to prevent potential timeout during fact gathering
+
+  handlers:
+    - name: restart systemd-timesyncd
+      service:
+        name: systemd-timesyncd
+        state: restarted
+
+  tasks:
+    - name: Set timezone to Europe/Brussels
+      timezone:
+        name: Europe/Brussels
+
+    - name: Configure timesyncd with Belgium NTP servers
+      copy:
+        dest: /etc/systemd/timesyncd.conf
+        content: |
+          [Time]
+          NTP=ntp1.oma.be ntp2.oma.be
+          FallbackNTP=be.pool.ntp.org 0.be.pool.ntp.org 1.be.pool.ntp.org
+      notify: restart systemd-timesyncd
+
+    - name: Restart timesyncd service
+      systemd:
+        name: systemd-timesyncd
+        state: restarted
+        daemon_reload: yes
+        enabled: yes
+
+    - name: Wait for time sync
+      command: timedatectl show
+      register: timedatectl_result
+      until: "'NTPSynchronized=yes' in timedatectl_result.stdout"
+      retries: 12
+      delay: 5
+
+    - name: Ensure the /etc/sysconfig/modules directory exists
+      file:
+        path: /etc/sysconfig/modules
+        state: directory
+        mode: '0755'
+      become: true
+
+    - name: Create the ipvs.modules file
+      copy:
+        dest: /etc/sysconfig/modules/ipvs.modules
+        content: |
+          #!/bin/bash
+          modprobe -- ip_vs
+          modprobe -- ip_vs_rr
+          modprobe -- ip_vs_wrr
+          modprobe -- ip_vs_sh
+          modprobe -- nf_conntrack
+        mode: '0755'
+      become: true
+
+    - name: Execute the ipvs.modules script
+      command: bash /etc/sysconfig/modules/ipvs.modules
+
+    - name: Verify IPVS modules are loaded
+      shell: lsmod | grep -e ip_vs -e nf_conntrack_ipv4
+      register: lsmod_output
+      changed_when: false
+
+    - name: Display loaded modules
+      debug:
+        msg: "{{ lsmod_output.stdout_lines }}"
+
+    - name: Ensure /etc/containerd directory exists
+      shell: |
+        mkdir -p /etc/containerd
+      args:
+        creates: /etc/containerd
+      become: true
+
+    - name: Generate default containerd config
+      shell: containerd config default | tee /etc/containerd/config.toml
+      become: true
+
+    - name: Ensure the config.toml file is present
+      stat:
+        path: /etc/containerd/config.toml
+      register: config_file
+
+    - name: Update SystemdCgroup setting
+      replace:
+        path: /etc/containerd/config.toml
+        regexp: 'SystemdCgroup = false'
+        replace: 'SystemdCgroup = true'
+      register: systemd_change
+
+    - name: Update sandbox_image setting
+      replace:
+        path: /etc/containerd/config.toml
+        regexp: 'sandbox_image = "registry\.k8s\.io/pause:3\.8"'
+        replace: 'sandbox_image = "registry.k8s.io/pause:3.10"'
+      register: sandbox_change
+
+    - name: Create or update /etc/crictl.yaml
+      ansible.builtin.copy:
+        dest: /etc/crictl.yaml
+        content: |
+          runtime-endpoint: unix:///run/containerd/containerd.sock
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Restart containerd service
+      become: true
+      systemd:
+        name: containerd
+        state: restarted
+        daemon_reload: yes
+    
+    - name: Enable containerd service
+      become: true
+      systemd:
+        name: containerd
+        enabled: yes
+        state: started
+
+    - name: Create /etc/modules-load.d/containerd.conf with required modules
+      copy:
+        dest: /etc/modules-load.d/containerd.conf
+        content: |
+          overlay
+          br_netfilter
+        mode: '0644'
+
+    - name: Load overlay module
+      modprobe:
+        name: overlay
+        state: present
+
+    - name: Load br_netfilter module
+      modprobe:
+        name: br_netfilter
+        state: present
+
+    - name: Create /etc/sysctl.d/k8s.conf with sysctl settings
+      copy:
+        dest: /etc/sysctl.d/k8s.conf
+        content: |
+          net.bridge.bridge-nf-call-iptables  = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.ipv4.ip_forward                 = 1
+          vm.swappiness                       = 0
+          vm.overcommit_memory                = 1
+          vm.panic_on_oom                     = 0  
+          fs.inotify.max_user_instances       = 8192
+          fs.inotify.max_user_watches         = 1048576
+          fs.file-max                         = 52706963
+          fs.nr_open                          = 52706963
+          net.ipv6.conf.all.disable_ipv6      = 1
+          net.netfilter.nf_conntrack_max      = 2310720
+          modprobe br_netfilter
+          lsmod | grep conntrack
+          modprobe ip_conntrack
+        mode: '0644'
+
+    - name: Reload all sysctl settings
+      command: sysctl -p /etc/sysctl.d/k8s.conf --system
+      become: true
+
+
+

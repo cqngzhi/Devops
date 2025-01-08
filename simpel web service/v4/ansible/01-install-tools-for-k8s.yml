@@ -1,0 +1,113 @@
+---
+- hosts: all
+  become: true
+  
+  tasks:
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+      become: true
+
+    - name: Upgrade all packages to latest version
+      apt:
+        upgrade: safe
+      become: true
+
+    - name: Wait for apt lock to be released
+      shell: |
+        while fuser /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/apt/archives/lock >/dev/null 2>&1; do
+          sleep 10
+        done
+
+    - name: Ensure dpkg is configured properly
+      shell: dpkg --configure -a
+      become: true
+
+    - name: Install required packages
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+          - apt-transport-https
+          - ca-certificates
+          - conntrack
+          - jq
+          - sysstat
+          - iptables
+          - libseccomp-dev
+          - socat
+          - curl
+          - gpg
+          - vim
+          - wget
+          - systemd-timesyncd
+          - software-properties-common
+          - gnupg2
+          - python3-kubernetes
+          - net-tools
+          - git
+        retries: 5
+        delay: 10
+        register: apt_install_result
+        until: apt_install_result is succeeded
+
+    - name: Download containerd tar.gz
+      get_url:
+        url: "https://github.com/containerd/containerd/releases/download/v1.7.22/containerd-1.7.22-linux-amd64.tar.gz"
+        dest: "/tmp/containerd-1.7.22-linux-amd64.tar.gz"
+
+    - name: Extract containerd to /usr/local
+      shell: |
+        tar -C /usr/local -xzf /tmp/containerd-1.7.22-linux-amd64.tar.gz
+      args:
+        creates: "/usr/local/bin/containerd"
+
+    - name: Create containerd systemd directory
+      file:
+        path: /usr/local/lib/systemd/system
+        state: directory
+        mode: '0755'
+      become: true
+
+    - name: Download containerd systemd service file
+      get_url:
+        url: "https://raw.githubusercontent.com/containerd/containerd/main/containerd.service"
+        dest: "/usr/local/lib/systemd/system/containerd.service"
+
+    - name: Reload systemd daemon
+      command: systemctl daemon-reload
+
+    - name: Enable and start containerd service
+      systemd:
+        name: containerd
+        state: started
+        enabled: yes
+
+    - name: Download runc binary
+      get_url:
+        url: "https://github.com/opencontainers/runc/releases/download/v1.1.9/runc.amd64"
+        dest: "/usr/local/sbin/runc"
+        mode: "0755"
+
+    - name: Download CNI plugins tar.gz
+      get_url:
+        url: "https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz"
+        dest: "/tmp/cni-plugins-linux-amd64-v1.1.1.tgz"
+
+    - name: Extract CNI plugins to /opt/cni/bin
+      shell: |
+        mkdir -p /opt/cni/bin
+        tar -C /opt/cni/bin -xzf /tmp/cni-plugins-linux-amd64-v1.1.1.tgz
+      args:
+        creates: "/opt/cni/bin/bridge"
+
+    - name: Clean up temporary files
+      file:
+        path: "/tmp/{{ item }}"
+        state: absent
+      loop:
+        - containerd-1.7.22-linux-amd64.tar.gz
+        - cni-plugins-linux-amd64-v1.1.1.tgz
+        - containerd.sha256

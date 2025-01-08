@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-site
+  namespace: web-site-jq
+  labels:
+    name: web-site
+    env: dev
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-web
+  template:
+    metadata:
+      labels:
+        app: my-web    # 确保与 selector 匹配
+        env: dev
+    spec:
+      restartPolicy: Always    # 修正拼写和位置
+      containers:
+      - name: my-app
+        image: jiaqimc/web-app:v0.0
+        imagePullPolicy: Always    # 修正拼写
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"         
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app
+  namespace: default
+spec:
+  selector:
+    app: my-app
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: ClusterIP

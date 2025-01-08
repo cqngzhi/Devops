@@ -1,0 +1,87 @@
+- hosts: all
+  become_method: sudo  
+  become_user: root
+  become: true
+  tasks:
+    - name: Download Kubernetes GPG key
+      become: true
+      get_url:
+        url: https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key
+        dest: /tmp/kubernetes-apt-keyring.asc
+
+    - name: Convert GPG key to keyring format
+      become: true
+      command: "gpg --yes --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes-apt-keyring.asc"
+
+    - name: Verify if Kubernetes GPG key was downloaded
+      stat:
+        path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      register: gpg_key_file
+
+    - name: Fail if Kubernetes GPG key download failed
+      fail:
+        msg: "Kubernetes GPG key file not found. Download failed."
+      when: not gpg_key_file.stat.exists
+
+    - name: Add Kubernetes v1.32 repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /"
+        filename: kubernetes
+        state: present
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Kubernetes components
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+
+    - name: Hold Kubernetes packages
+      dpkg_selections:
+        name: "{{ item }}"
+        selection: hold
+      loop:
+        - kubelet
+        - kubeadm
+        - kubectl
+
+    - name: Create /etc/sysconfig/kubelet and set KUBELET_EXTRA_ARGS
+      copy:
+        dest: /etc/sysconfig/kubelet
+        content: |
+          KUBELET_EXTRA_ARGS="--cgroup-driver=systemd"
+        mode: '0644'
+    
+    - name: Enable kubelet service to start on boot
+      systemd:
+        name: kubelet
+        enabled: yes
+        state: started    
+    
+    - name: List kubeadm images for Kubernetes version v1.32.0
+      command: kubeadm config images list --kubernetes-version=v1.32.0
+      register: kubeadm_images
+      changed_when: false
+
+    - name: Show the output of kubeadm images list
+      debug:
+        var: kubeadm_images.stdout
+
+    - name: Check if pause:3.10 is in the image list
+      set_fact:
+        pause_image_found: "{{ 'pause:3.10' in kubeadm_images.stdout }}"
+
+    - name: Pull kubeadm images for Kubernetes version v1.32.0
+      command: kubeadm config images pull --image-repository registry.k8s.io --kubernetes-version=v1.32.0
+      register: kubeadm_images_pull
+      changed_when: true
+
+    - name: Show the output of kubeadm images pull
+      debug:
+        var: kubeadm_images_pull.stdout
+

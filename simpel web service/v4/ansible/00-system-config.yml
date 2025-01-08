@@ -1,0 +1,121 @@
+---
+- hosts: all
+  become: true
+  gather_facts: false  # Added to prevent potential timeout during fact gathering
+
+  handlers:
+    - name: update grub configuration
+      command: update-grub
+      
+    - name: restart ssh
+      service:
+        name: ssh
+        state: restarted       
+
+  vars:
+    user_name: k8s
+    ip_addresses:
+      node1: 10.0.1.100
+      node2: 10.0.2.100
+      node3: 10.0.3.100
+      master: 10.0.1.10
+  
+  tasks:
+    - name: Display OS release information
+      command: cat /etc/os-release
+      register: os_release_output
+      changed_when: false
+
+    - name: Show OS release details
+      debug:
+        msg: "{{ os_release_output.stdout_lines }}"
+
+    - name: Set hostname to the defined value
+      hostname:
+        name: "{{ ansible_hostname }}"
+
+    - name: Configure /etc/hosts file
+      blockinfile:
+        path: /etc/hosts
+        create: yes
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        block: |
+          127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+          ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+          
+          # Cluster nodes
+          {% for host, ip in ip_addresses.items() %}
+          {{ ip }} {{ host }}
+          {% endfor %}
+        mode: '0644'
+
+    - name: Ensure resolv.conf contains 1.1.1.1 as nameserver
+      lineinfile:
+        path: /etc/resolv.conf
+        line: "nameserver 1.1.1.1"
+        create: yes
+        state: present
+        insertafter: "^#nameserver"
+
+    - name: Ensure resolv.conf contains 8.8.8.8 as nameserver
+      lineinfile:
+        path: /etc/resolv.conf
+        line: "nameserver 8.8.8.8"
+        create: yes
+        state: present
+        insertafter: "^#nameserver"
+
+    - name: Restart systemd-resolved service
+      systemd:
+        name: systemd-resolved
+        state: restarted
+      when: ansible_facts.services['systemd-resolved'] is defined
+
+
+
+    - name: Set GRUB timeout to 0 seconds
+      lineinfile:
+        path: /etc/default/grub
+        regexp: "^GRUB_TIMEOUT="
+        line: "GRUB_TIMEOUT=0"
+        backup: yes
+      notify: update grub configuration
+
+    - name: Configure SSH security settings
+      copy:
+        dest: /etc/ssh/sshd_config.d/sshd_hardening.conf
+        content: |
+          PasswordAuthentication no
+          PermitEmptyPasswords no
+          ChallengeResponseAuthentication no
+          X11Forwarding no
+          PrintMotd no
+          ClientAliveInterval 120
+          Protocol 2
+          PermitRootLogin no
+          MaxAuthTries 3
+        mode: '0600'
+      notify: restart ssh
+
+    - name: Disable swap temporarily
+      command: swapoff -a
+
+    - name: Ensure swap is disabled on reboot
+      lineinfile:
+        path: /etc/fstab
+        regexp: '^.*\s+swap\s+.*$'
+        line: '#\0'
+        backrefs: yes
+
+    - name: Verify swap is disabled
+      shell: free -h | grep -i swap
+      register: swap_status
+      failed_when: "'0B' not in swap_status.stdout"
+
+    - debug:
+        msg: "Swap has been disabled successfully."
+
+    - name: Reboot the system
+      reboot:
+        reboot_timeout: 600  # Wait time for reboot in seconds
+        test_command: whoami
